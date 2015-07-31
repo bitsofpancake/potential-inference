@@ -3,23 +3,14 @@
 #include <random>
 #include <ctime>
 #include <boost/numeric/odeint.hpp>
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics.hpp>
+#include "SmoothKernelApproximation.hpp"
+#include "Particle.hpp"
 
-using namespace boost::accumulators;
 using namespace boost::numeric::odeint;
 
 double sign(const double x) {
 	return std::signbit(x) ? -1.0 : 1.0;
 }
-
-const int dim = 1;
-typedef double vector_t[dim];
-struct Particle {
-	vector_t p;
-	vector_t q;
-};
-typedef double param_t;
 
 class HamiltonianSystem {
 	const param_t alpha;
@@ -34,70 +25,21 @@ class HamiltonianSystem {
 		};
 };
 
-class SmoothKernelApproximation {
-	std::vector<Particle> data;
-	mutable accumulator_set<double, stats<tag::variance>> accumulator_p[dim];
-	mutable accumulator_set<double, stats<tag::variance>> accumulator_q[dim];
-	double bandwidth_p[dim];
-	double bandwidth_q[dim];
-	double vol = 1.0;
-	
-	double kernel(const double u) const {
-		if (u <= -1 || u >= 1)
-			return 0;
-		return 0.75 * (1 - u*u);
-	}
-	
-	public:
-		void add(const std::vector<Particle> others) {
-			data.insert(data.end(), others.begin(), others.end());
-			for (const Particle &particle : others) {
-				for (int i = 0; i < dim; i++) {
-					accumulator_p[i](particle.p[i]);
-					accumulator_q[i](particle.q[i]);
-				}
-			}
-		};
-		
-		void save() {
-			// Calculate bandwidth.
-			for (int i = 0; i < dim; i++) {
-				// Scott's rule
-				bandwidth_p[i] = sqrt(variance(accumulator_p[i])) * pow(data.size(), -1.0 / (4 + 2 * dim));
-				bandwidth_q[i] = sqrt(variance(accumulator_q[i])) * pow(data.size(), -1.0 / (4 + 2 * dim));
-				vol *= bandwidth_p[i] * bandwidth_q[i];
-			}
-		}
-		
-		double operator()(const Particle a) const {
-			double value = 0.0;			
-			for (const Particle &b : data) {
-				double u_sq = 0;
-				for (int i = 0; i < dim; i++) {
-					u_sq += pow((a.p[i] - b.p[i]) / bandwidth_p[i], 2);
-					u_sq += pow((a.q[i] - b.q[i]) / bandwidth_q[i], 2);
-				}
-				value += kernel(sqrt(u_sq));
-			}
-				
-			return value / data.size() / vol;
-		};
-};
-
 double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	// Generate the distribution function
 	const double T = 20.0;
-	SmoothKernelApproximation f;
+	SmoothKernelApproximation2 f;
 	f.add(data);
 	
-	const double dt = 0.01;
+	const int samplesPerUnitTime = 10;
+	const double dt = 1.0 / samplesPerUnitTime;
 	symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
 	int i = 0;
 	for (double t = 0.0; t < T; t += dt) {
 		for (Particle &particle : data)
 			stepper.do_step(sys, particle.q, particle.p, t, dt);
 		
-		if (++i % 100 == 0)
+		if (++i % samplesPerUnitTime == 0)
 			f.add(data);
 	}
 	f.save();
@@ -112,7 +54,8 @@ double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 int main(int argc, char *argv[]) {
 	const int n = atoi(argv[1]);
 	HamiltonianSystem sys(atof(argv[2]));
-	const double dt = 0.01;
+	const double dt = 0.1;
+	const double mixingTime = 500.0; // When in doubt, increase this!
 	
 	// Generate initial conditions by randomly populating stars, and then evolving them until phase-mixed.
 	std::random_device engine;
@@ -124,7 +67,7 @@ int main(int argc, char *argv[]) {
 		data[i].p[0] = rand_sign(engine) * rand(engine);
 		
 		symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
-		for (double t = 0.0; t < 100; t += dt)
+		for (double t = 0.0; t <= mixingTime; t += dt)
 			stepper.do_step(sys, data[i].q, data[i].p, t, dt);
 	}
 	/*
@@ -151,5 +94,4 @@ int main(int argc, char *argv[]) {
 	// Calculate likelihoods for all alpha.
 	for (double alpha = 1.0; alpha < 3.0; alpha += 0.1)
 		std::cout << alpha << '\t' << loglikelihood(data, HamiltonianSystem(alpha)) << std::endl;
-		
 }

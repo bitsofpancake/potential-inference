@@ -1,14 +1,17 @@
 CFLAGS=-c -O3 -I$(BOOST_INCLUDEDIR) -std=gnu++11
 
-all: hello.o
-	g++ -L$(LD_LIBRARY_PATH) hello.o -o hello
+all: main.o SmoothKernelApproximation.o
+	g++ -L$(LD_LIBRARY_PATH) main.o SmoothKernelApproximation.o -o main
 
-hello.o: hello.cpp
-	g++ $(CFLAGS) hello.cpp
+main.o: main.cpp
+	g++ $(CFLAGS) main.cpp
+	
+SmoothKernelApproximation.o: SmoothKernelApproximation.cpp
+	g++ $(CFLAGS) SmoothKernelApproximation.cpp
 
 load:
 	module load boost
 	module load gcc/4.8.3
 
 clean:
-	rm *.o hello
+	rm *.o main
