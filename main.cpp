@@ -28,7 +28,7 @@ class HamiltonianSystem {
 double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	// Generate the distribution function
 	const double T = 20.0;
-	SmoothKernelApproximation2 f;
+	SmoothKernelApproximation f;
 	f.add(data);
 	
 	const int samplesPerUnitTime = 10;
@@ -50,7 +50,7 @@ double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 		loglikelihood += log(f(particle));
 	return loglikelihood;
 }
-
+/*
 int main(int argc, char *argv[]) {
 	const int n = atoi(argv[1]);
 	HamiltonianSystem sys(atof(argv[2]));
@@ -69,7 +69,26 @@ int main(int argc, char *argv[]) {
 		symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
 		for (double t = 0.0; t <= mixingTime; t += dt)
 			stepper.do_step(sys, data[i].q, data[i].p, t, dt);
+		
+		std::cout << data[i].q[0] << '\t' << data[i].p[0] << std::endl;
 	}
+}
+*/
+
+int main(int argc, char *argv[]) {
+
+	// Read data from stdin
+	std::vector<Particle> data;
+	while (true) {
+		Particle particle;
+		bool success = false;
+		for (int i = 0; i < 2*dim; i++)
+			success = std::cin >> particle.coords[i];
+		if (!success)
+			break;
+		data.push_back(particle);
+	}
+	
 	/*
 	// Metropolis-Hastings
 	param_t current_param = 2.0;
@@ -90,7 +109,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	*/
-	
 	// Calculate likelihoods for all alpha.
 	for (double alpha = 1.0; alpha < 3.0; alpha += 0.1)
 		std::cout << alpha << '\t' << loglikelihood(data, HamiltonianSystem(alpha)) << std::endl;
