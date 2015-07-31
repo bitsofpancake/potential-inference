@@ -5,6 +5,10 @@ all: hello.o
 
 hello.o: hello.cpp
 	g++ $(CFLAGS) hello.cpp
-	
+
+load:
+	module load boost
+	module load gcc/4.8.3
+
 clean:
 	rm *.o hello
