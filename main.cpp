@@ -48,9 +48,9 @@ double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	double loglikelihood = 0.0;
 	for (const Particle &particle : data)
 		loglikelihood += log10(f(particle));
-	return loglikelihood;
+	return loglikelihood / T;
 }
-/*
+
 int main(int argc, char *argv[]) {
 	const int n = atoi(argv[1]);
 	HamiltonianSystem sys(atof(argv[2]));
@@ -70,13 +70,13 @@ int main(int argc, char *argv[]) {
 		for (double t = 0.0; t <= mixingTime; t += dt)
 			stepper.do_step(sys, data[i].q, data[i].p, t, dt);
 		
-		std::cout << data[i].q[0] << '\t' << data[i].p[0] << std::endl;
+		//std::cout << data[i].q[0] << '\t' << data[i].p[0] << std::endl;
 	}
-}
-*/
+//}
 
-int main(int argc, char *argv[]) {
 
+//int main(int argc, char *argv[]) {
+/*
 	// Read data from stdin
 	std::vector<Particle> data;
 	while (true) {
@@ -87,30 +87,12 @@ int main(int argc, char *argv[]) {
 		if (!success)
 			break;
 		data.push_back(particle);
-	}
-	/*
-	SmoothKernelApproximation f;
-	f.add(data);
-	f.save();
-	f(data[0]);
-	
-	std::cout << std::endl;
-	
-	SmoothKernelApproximation2 f2;
-	f2.add(data);
-	f2.save();
-	f2(data[0]);
-	*/
-	/*
-	
-	for (int i = 0; i < data.size(); i++) {
-		std::cout << i << '\t' << f(data[i]) << '\t' << f2(data[i]) << std::endl;
-		
 	}*/
 	
 	/*
 	// Metropolis-Hastings
 	param_t current_param = 2.0;
+	std::random_device engine;
 	std::uniform_real_distribution<double> acceptance(0, 1);
 	double current_loglikelihood = loglikelihood(data, HamiltonianSystem(current_param));
 	while (true) {
