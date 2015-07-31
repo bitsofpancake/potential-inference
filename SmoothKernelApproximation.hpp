@@ -8,8 +8,6 @@
 
 using namespace boost::accumulators;
 
-// need to include particle
-
 class SmoothKernelApproximation {
 	std::vector<Particle> data;
 	mutable accumulator_set<double, stats<tag::variance>> accumulator[2*dim];

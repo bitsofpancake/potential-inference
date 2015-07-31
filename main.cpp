@@ -28,7 +28,7 @@ class HamiltonianSystem {
 double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	// Generate the distribution function
 	const double T = 20.0;
-	SmoothKernelApproximation f;
+	SmoothKernelApproximation2 f;
 	f.add(data);
 	
 	const int samplesPerUnitTime = 10;
@@ -47,7 +47,7 @@ double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	// Multiply likelihoods together.
 	double loglikelihood = 0.0;
 	for (const Particle &particle : data)
-		loglikelihood += log(f(particle));
+		loglikelihood += log10(f(particle));
 	return loglikelihood;
 }
 /*
@@ -88,6 +88,25 @@ int main(int argc, char *argv[]) {
 			break;
 		data.push_back(particle);
 	}
+	/*
+	SmoothKernelApproximation f;
+	f.add(data);
+	f.save();
+	f(data[0]);
+	
+	std::cout << std::endl;
+	
+	SmoothKernelApproximation2 f2;
+	f2.add(data);
+	f2.save();
+	f2(data[0]);
+	*/
+	/*
+	
+	for (int i = 0; i < data.size(); i++) {
+		std::cout << i << '\t' << f(data[i]) << '\t' << f2(data[i]) << std::endl;
+		
+	}*/
 	
 	/*
 	// Metropolis-Hastings
@@ -109,6 +128,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	*/
+	
 	// Calculate likelihoods for all alpha.
 	for (double alpha = 1.0; alpha < 3.0; alpha += 0.1)
 		std::cout << alpha << '\t' << loglikelihood(data, HamiltonianSystem(alpha)) << std::endl;

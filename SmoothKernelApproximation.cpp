@@ -23,12 +23,15 @@ void SmoothKernelApproximation::save() {
 };
 	
 double SmoothKernelApproximation::operator()(const Particle a) const {
-	double value = 0.0;			
+	double value = 0.0;
 	for (const Particle &b : data) {
 		double u_sq = 0;
 		for (int i = 0; i < 2*dim; i++)
 			u_sq += pow((a.coords[i] - b.coords[i]) / bandwidth[i], 2);
 		value += kernel(sqrt(u_sq));
+		if (u_sq <= 1) {
+		//	std::cout << sqrt(u_sq) << '\t' << b.coords[0] << '\t' << b.coords[1] << std::endl;
+		}
 	}
 	return value / data.size() / vol;
 };
@@ -42,11 +45,11 @@ inline size_t SmoothKernelApproximation2::KDAdaptor::kdtree_get_point_count() co
 inline double SmoothKernelApproximation2::KDAdaptor::kdtree_distance(const double *b, const size_t j, size_t size) const {
 	double u_sq = 0;
 	for (int i = 0; i < 2*dim; i++)
-		u_sq += pow((data[j].coords[i] - b[i]) / bandwidth[i], 2);
+		u_sq += pow(kdtree_get_pt(j, i) - b[i], 2);
 	return u_sq;
 };
-inline double SmoothKernelApproximation2::KDAdaptor::kdtree_get_pt(const size_t i, int dim) const {
-	return data[i].coords[dim];
+inline double SmoothKernelApproximation2::KDAdaptor::kdtree_get_pt(const size_t j, int i) const {
+	return data[j].coords[i] / bandwidth[i];
 };
 template <class BoundingBox>
 bool SmoothKernelApproximation2::KDAdaptor::kdtree_get_bbox(BoundingBox &x) const {
@@ -86,10 +89,17 @@ double SmoothKernelApproximation2::operator()(const Particle a) const {
 	SearchParams params;
 	std::vector<std::pair<size_t, double>> neighbors;
 	
-	tree.radiusSearch(&(a.coords[0]), 1.0, neighbors, params);
+	Particle scaled;
+	for (int i = 0; i < 2*dim; i++)
+		scaled.coords[i] = a.coords[i] / bandwidth[i];
+	
+	tree.radiusSearch(&(scaled.coords[0]), 1.0, neighbors, params);
 	double value = 0.0;
-	for (auto neighbor : neighbors)
+	
+	for (auto neighbor : neighbors) {
+		//std::cout << sqrt(neighbor.second) << '\t' << data[neighbor.first].coords[0] << '\t' << data[neighbor.first].coords[1] << std::endl;
 		value += kernel(sqrt(neighbor.second));
+	}
 		
 	return value / data.size() / vol;
 };
