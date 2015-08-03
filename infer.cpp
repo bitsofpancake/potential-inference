@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cmath>
 #include <random>
-#include <ctime>
 #include <boost/numeric/odeint.hpp>
 #include "SmoothKernelApproximation.hpp"
 #include "Particle.hpp"
@@ -16,14 +15,14 @@ typedef double param_t;
 class HamiltonianSystem {
 	const param_t alpha;
 
-	public:
-		HamiltonianSystem(const param_t alpha) : alpha(alpha) {};
+ public:
+	HamiltonianSystem(const param_t alpha) : alpha(alpha) {};
 
-		// Assume the position derivative is p.
-		// Returns the momentum derivative.
-		void operator()(const vector_t &q, vector_t &dpdt) const {
-			dpdt[0] = -0.5 * pow(fabs(q[0]), alpha - 1) * sign(q[0]);
-		};
+	// Assume the position derivative is p.
+	// Returns the momentum derivative.
+	void operator()(const vector_t &q, vector_t &dpdt) const {
+		dpdt[0] = -0.5 * pow(fabs(q[0]), alpha - 1) * sign(q[0]);
+	};
 };
 
 double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
@@ -53,31 +52,7 @@ double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 }
 
 int main(int argc, char *argv[]) {
-	const int n = atoi(argv[1]);
-	HamiltonianSystem sys(atof(argv[2]));
-	const double dt = 0.1;
-	const double mixingTime = 500.0; // When in doubt, increase this!
-	
-	// Generate initial conditions by randomly populating stars, and then evolving them until phase-mixed.
-	std::random_device engine;
-	std::uniform_real_distribution<double> rand(5, 15);
-	std::discrete_distribution<int> rand_sign {-1, 1};
-	std::vector<Particle> data(n);
-	for (int i = 0; i < n; i++) {
-		data[i].q[0] = rand_sign(engine) * rand(engine);
-		data[i].p[0] = rand_sign(engine) * rand(engine);
-		
-		symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
-		for (double t = 0.0; t <= mixingTime; t += dt)
-			stepper.do_step(sys, data[i].q, data[i].p, t, dt);
-		
-		//std::cout << data[i].q[0] << '\t' << data[i].p[0] << std::endl;
-	}
-//}
 
-
-//int main(int argc, char *argv[]) {
-/*
 	// Read data from stdin
 	std::vector<Particle> data;
 	while (true) {
@@ -88,7 +63,7 @@ int main(int argc, char *argv[]) {
 		if (!success)
 			break;
 		data.push_back(particle);
-	}*/
+	}
 	
 	/*
 	// Metropolis-Hastings
