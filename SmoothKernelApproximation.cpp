@@ -70,13 +70,15 @@ void SmoothKernelApproximation_KDTree::save() {
 };
 
 double SmoothKernelApproximation_KDTree::operator()(const Particle a) const {
-	SearchParams params;
-	std::vector<std::pair<size_t, double>> neighbors;
 	
 	Particle scaled;
 	for (int i = 0; i < 2*dim; i++)
 		scaled.coords[i] = a.coords[i] / bandwidth[i];
 	
+	SearchParams params;
+	params.sorted = false;
+	
+	std::vector<std::pair<size_t, double>> neighbors;
 	tree.radiusSearch(&(scaled.coords[0]), 1.0, neighbors, params);
 	double value = 0.0;
 	

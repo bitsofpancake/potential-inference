@@ -35,10 +35,12 @@ double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	const double dt = 1.0 / samplesPerUnitTime;
 	symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
 	int i = 0;
+	int n = data.size();
 	for (double t = 0.0; t < T; t += dt) {
-		for (Particle &particle : data)
-			stepper.do_step(sys, particle.q, particle.p, t, dt);
-		
+		#pragma omp parallel for
+		for (int i = 0; i < n; i++)
+			stepper.do_step(sys, data[i].q, data[i].p, t, dt);
+	
 		if (++i % samplesPerUnitTime == 0)
 			f.add(data);
 	}
@@ -46,8 +48,9 @@ double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	
 	// Multiply likelihoods together.
 	double loglikelihood = 0.0;
-	for (const Particle &particle : data)
-		loglikelihood += log10(f(particle));
+	#pragma omp parallel for reduction(+:loglikelihood)
+	for (int i = 0; i < n; i++)
+		loglikelihood += log10(f(data[i]));
 	return loglikelihood / T;
 }
 
@@ -68,7 +71,8 @@ int main(int argc, char *argv[]) {
 	/*
 	// Metropolis-Hastings
 	param_t current_param = 2.0;
-	std::random_device engine;
+	std::random_device rd;
+	std::mt19937 engine(rd());
 	std::uniform_real_distribution<double> acceptance(0, 1);
 	double current_loglikelihood = loglikelihood(data, HamiltonianSystem(current_param));
 	while (true) {
@@ -87,7 +91,10 @@ int main(int argc, char *argv[]) {
 	}
 	*/
 	
+	
 	// Calculate likelihoods for all alpha.
 	for (double alpha = 1.0; alpha < 3.0; alpha += 0.1)
 		std::cout << alpha << '\t' << loglikelihood(data, HamiltonianSystem(alpha)) << std::endl;
+		
+	//std::cout << loglikelihood(data, HamiltonianSystem(1.8)) << std::endl;
 }
