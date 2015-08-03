@@ -6,11 +6,11 @@
 #include "nanoflann.hpp"
 #include "Particle.hpp"
 
-using namespace boost::accumulators;
+class SmoothKernelApproximation_LinearSearch {
+	typedef boost::accumulators::accumulator_set<double, boost::accumulators::stats<boost::accumulators::tag::variance>> VarianceAccumulator;
 
-class SmoothKernelApproximation {
 	std::vector<Particle> data;
-	mutable accumulator_set<double, stats<tag::variance>> accumulator[2*dim];
+	mutable VarianceAccumulator accumulator[2*dim];
 	double bandwidth[2*dim];
 	double vol = 1.0;
 	
@@ -22,10 +22,7 @@ class SmoothKernelApproximation {
 	double operator()(const Particle a) const;
 };
 
-
-
-using namespace nanoflann;
-class SmoothKernelApproximation2 {
+class SmoothKernelApproximation_KDTree {
 		
 	struct KDAdaptor {
 		const std::vector<Particle> &data;
@@ -39,10 +36,11 @@ class SmoothKernelApproximation2 {
 		bool kdtree_get_bbox(BoundingBox &x) const;
 	};
 	
-	typedef KDTreeSingleIndexAdaptor<L2_Simple_Adaptor<double, KDAdaptor>, KDAdaptor, dim*2> KDTree;
+	typedef nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<double, KDAdaptor>, KDAdaptor, dim*2> KDTree;
+	typedef boost::accumulators::accumulator_set<double, boost::accumulators::stats<boost::accumulators::tag::variance>> VarianceAccumulator;
 	
 	std::vector<Particle> data;
-	mutable accumulator_set<double, stats<tag::variance>> accumulator[2*dim];
+	mutable VarianceAccumulator accumulator[2*dim];
 	double bandwidth[2*dim];
 	double vol = 1.0;
 	
@@ -52,10 +50,12 @@ class SmoothKernelApproximation2 {
 	double kernel(const double u) const;
 
  public:
-	SmoothKernelApproximation2();
+	SmoothKernelApproximation_KDTree();
 	void add(const std::vector<Particle> others);
 	void save();
 	double operator()(const Particle a) const;
 };
+
+typedef SmoothKernelApproximation_KDTree SmoothKernelApproximation;
 
 #endif

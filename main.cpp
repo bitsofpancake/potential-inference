@@ -12,6 +12,7 @@ double sign(const double x) {
 	return std::signbit(x) ? -1.0 : 1.0;
 }
 
+typedef double param_t;
 class HamiltonianSystem {
 	const param_t alpha;
 
@@ -28,7 +29,7 @@ class HamiltonianSystem {
 double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	// Generate the distribution function
 	const double T = 20.0;
-	SmoothKernelApproximation2 f;
+	SmoothKernelApproximation f;
 	f.add(data);
 	
 	const int samplesPerUnitTime = 10;

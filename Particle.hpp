@@ -10,6 +10,5 @@ union Particle {
 		vector_t q;
 	};
 };
-typedef double param_t;
 
 #endif
