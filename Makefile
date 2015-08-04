@@ -1,5 +1,5 @@
-CFLAGS=-c -O3 -funroll-loops -I$(BOOST_INCLUDEDIR) -std=gnu++11
-LINKERFLAGS=
+CFLAGS=-c -O3 -funroll-loops -fopenmp -I$(BOOST_INCLUDEDIR) -std=gnu++11
+LINKERFLAGS=-fopenmp
 
 all: generate infer
 

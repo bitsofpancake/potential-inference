@@ -6,27 +6,22 @@
 
 using namespace boost::numeric::odeint;
 
-double sign(const double x) {
-	return std::signbit(x) ? -1.0 : 1.0;
+void normalize_vector(vector_t &v) {
+	double r = 0;
+	for (int i = 0; i < dim; i++)
+		r += v[i]*v[i];
+	r = sqrt(r);
+	for (int i = 0; i < dim; i++)
+		v[i] /= r;
 }
-
-typedef double param_t;
-class HamiltonianSystem {
-	const param_t alpha;
-
- public:
-	HamiltonianSystem(const param_t alpha) : alpha(alpha) {};
-
-	// Assume the position derivative is p.
-	// Returns the momentum derivative.
-	void operator()(const vector_t &q, vector_t &dpdt) const {
-		dpdt[0] = -0.5 * pow(fabs(q[0]), alpha - 1) * sign(q[0]);
-	};
-};
 
 int main(int argc, char *argv[]) {
 	const int n = atoi(argv[1]);
-	HamiltonianSystem sys(atof(argv[2]));
+	param_t param;
+	for (int i = 0; i < param.size(); i++)
+		param[i] = atof(argv[2 + i]);
+	HamiltonianSystem sys(param);
+	
 	const double dt = 0.1;
 	const double mixingTime = 1000.0; // When in doubt, increase this!
 	
@@ -39,6 +34,7 @@ int main(int argc, char *argv[]) {
 	#pragma omp parallel for
 	for (int j = 0; j < n; j++) {
 		Particle particle;
+		
 		for (int i = 0; i < 2*dim; i++)
 			particle.coords[i] = rand_sign(engine) * rand(engine);
 		
