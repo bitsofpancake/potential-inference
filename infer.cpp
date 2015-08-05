@@ -6,7 +6,7 @@
 #include "Particle.hpp"
 
 using namespace boost::numeric::odeint;
-
+/*
 double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem &sys) {
 	// Generate the distribution function
 	const double T = 20.0;
@@ -36,9 +36,61 @@ double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem 
 		loglikelihood += log(f(data[i]));
 	return loglikelihood;
 }
+*/
+double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem &sys) {
+	// Generate the distribution function
+	const double T = 20.0;
+	const double dt = 0.1;
+	const double sampleRate = 1;
+	int n = data.size();
+	
+	std::vector<Particle> evolved_data = data;
+	std::vector<double> likelihoods(n);
+	SmoothKernelApproximation f;
+	f.add(evolved_data);
+	f.save();
+	
+	#pragma omp parallel for
+	for (int i = 0; i < n; i++)
+		likelihoods[i] = f(data[i]);
+	
+	symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
+	double t = 0;
+	while (t <= T) {
+		double tf = t + 1.0 / sampleRate;
+		
+		#pragma omp parallel for
+		for (int i = 0; i < n; i++) {
+			double tt = t;
+			while (tt <= tf) {
+				stepper.do_step(sys, evolved_data[i].q, evolved_data[i].p, tt, dt);
+				tt += dt;
+			}
+		}
+		
+		// Advance t -- necessary because of the multithreading. 
+		while (t <= tf)
+			t += dt;
+		
+		// Add the evolved data.
+		SmoothKernelApproximation f;
+		f.add(evolved_data);
+		f.save();
+		
+		#pragma omp parallel for
+		for (int i = 0; i < n; i++)
+			likelihoods[i] += f(data[i]);
+	}
+	
+	// Multiply likelihoods together.
+	double loglikelihood = 0.0;
+	for (int i = 0; i < n; i++)
+		loglikelihood += log(likelihoods[i]);
+	return loglikelihood;
+}
 
 double annealing_schedule(int t) {
-	return 1.0 * exp(-t / 1000.0);
+	return 1.0 * exp(-t / 500.0);
 }
 
 int main(int argc, char *argv[]) {
@@ -69,7 +121,7 @@ int main(int argc, char *argv[]) {
 	int iteration = 0;
 	while (true) {
 		param_t candidate_param;
-		std::normal_distribution<double> jumping(0, annealing_schedule(iteration++));
+		std::normal_distribution<double> jumping(0, annealing_schedule(iteration));
 		for (int i = 0; i < candidate_param.size(); i++)
 			candidate_param[i] = jumping(engine) + current_param[i];
 	
@@ -79,6 +131,7 @@ int main(int argc, char *argv[]) {
 			//std::cout << candidate_param << std::endl;
 			current_param = candidate_param;
 			current_loglikelihood = candidate_loglikelihood;
+			iteration++;
 		} else {
 			//std::cout << candidate_param << " (rejected)" << std::endl;
 		}
