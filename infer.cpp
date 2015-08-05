@@ -9,7 +9,7 @@ using namespace boost::numeric::odeint;
 
 double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	// Generate the distribution function
-	const double T = 20.0;
+	const double T = 1000.0;
 	SmoothKernelApproximation f;
 	f.add(data);
 	
@@ -50,7 +50,6 @@ int main(int argc, char *argv[]) {
 		data.push_back(particle);
 	}
 
-/*	
 	// Metropolis-Hastings
 	param_t current_param;
 	
@@ -71,20 +70,22 @@ int main(int argc, char *argv[]) {
 		double candidate_loglikelihood = log(prior(candidate_param)) + loglikelihood(data, HamiltonianSystem(candidate_param));
 		double acceptance_ratio = exp(candidate_loglikelihood - current_loglikelihood);
 		if (acceptance_ratio >= acceptance(engine)) {
-			std::cout << candidate_param << std::endl;
+			//std::cout << candidate_param << std::endl;
 			current_param = candidate_param;
 			current_loglikelihood = candidate_loglikelihood;
 		} else {
 			//std::cout << candidate_param << " (rejected)" << std::endl;
 		}
+		std::cout << candidate_param << candidate_loglikelihood << std::endl;
 	}
-*/	
+/*/	
 	// Calculate likelihoods for all alpha.
 	param_t current_param;
 	for (double alpha = 1.0; alpha < 3.0; alpha += 0.1) {
 		current_param[0] = alpha;
 		std::cout << alpha << '\t' << loglikelihood(data, HamiltonianSystem(current_param)) << std::endl;
 	}
+*/
 	
 	//std::cout << loglikelihood(data, HamiltonianSystem(1.8)) << std::endl;
 }

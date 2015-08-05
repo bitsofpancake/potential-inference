@@ -1,7 +1,7 @@
 #ifndef PARTICLE_HPP
 #define PARTICLE_HPP
 
-const int dim = 1;
+const int dim = 2;
 typedef double vector_t[dim];
 union Particle {
 	double coords[dim*2];
@@ -18,7 +18,7 @@ double sign(const double x) {
 	return std::signbit(x) ? -1.0 : 1.0;
 }
 
-typedef std::array<double, 1> param_t;
+typedef std::array<double, 2> param_t; // (R^2, q^2)
 class HamiltonianSystem {
 	const param_t param;
 
@@ -28,7 +28,10 @@ class HamiltonianSystem {
 	// Assume the position derivative is p.
 	// Returns the momentum derivative.
 	void operator()(const vector_t &q, vector_t &dpdt) const {
-		dpdt[0] = -0.5 * pow(fabs(q[0]), param[0] - 1) * sign(q[0]);
+		dpdt[0] = -q[0] * (param[0] + q[0]*q[0] + q[1]*q[1]/param[1]);
+		dpdt[1] = -q[1]/param[1] * (param[0] + q[0]*q[0] + q[1]*q[1]/param[1]);
+		
+	//	dpdt[0] = -0.5 * pow(fabs(q[0]), param[0] - 1) * sign(q[0]);
 	/*	
 		// Toy galaxy potential
 		double r_cubed_inv = pow(q[0]*q[0] + q[1]*q[1] + q[2]*q[2], -1.5);
@@ -42,8 +45,7 @@ class HamiltonianSystem {
 };
 
 double prior(const param_t &param) {
-	//return param[0] >= 0 && param[1] >= 0 ? 1 : 0;
-	return param[0] >= 1;
+	return param[0] >= 0 && param[1] >= 0 && ? 1 : 0;
 };
 
 std::ostream &operator<<(std::ostream &os, const param_t &param) {

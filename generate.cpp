@@ -23,30 +23,33 @@ int main(int argc, char *argv[]) {
 	HamiltonianSystem sys(param);
 	
 	const double dt = 0.1;
-	const double mixingTime = 1000.0; // When in doubt, increase this!
+	const double mixingTime = 10000.0; // When in doubt, increase this!
 	
 	// Generate initial conditions by randomly populating stars, and then evolving them until phase-mixed.
-	std::random_device rd;
-	std::mt19937 engine(rd());
-	std::uniform_real_distribution<double> rand(5, 15);
-	std::discrete_distribution<int> rand_sign {-1, 1};
-	
-	#pragma omp parallel for
-	for (int j = 0; j < n; j++) {
-		Particle particle;
+	#pragma omp parallel
+	{
+		std::random_device rd;
+		std::mt19937 engine(rd());
+		std::uniform_real_distribution<double> rand(0.25, 1.5);
+		std::discrete_distribution<int> rand_sign {-1, 1};
 		
-		for (int i = 0; i < 2*dim; i++)
-			particle.coords[i] = rand_sign(engine) * rand(engine);
-		
-		symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
-		for (double t = 0.0; t <= mixingTime; t += dt)
-			stepper.do_step(sys, particle.q, particle.p, t, dt);
-		
-		#pragma omp critical
-		{
+		#pragma omp for
+		for (int j = 0; j < n; j++) {
+			Particle particle;
+			
 			for (int i = 0; i < 2*dim; i++)
-				std::cout << particle.coords[i] << '\t';
-			std::cout << std::endl;
+				particle.coords[i] = rand_sign(engine) * rand(engine);
+			
+			symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
+			for (double t = 0.0; t <= mixingTime; t += dt)
+				stepper.do_step(sys, particle.q, particle.p, t, dt);
+			
+			#pragma omp critical
+			{
+				for (int i = 0; i < 2*dim; i++)
+					std::cout << particle.coords[i] << '\t';
+				std::cout << std::endl;
+			}
 		}
 	}
 }
