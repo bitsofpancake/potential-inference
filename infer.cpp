@@ -7,24 +7,25 @@
 
 using namespace boost::numeric::odeint;
 
-double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
+double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem &sys) {
 	// Generate the distribution function
-	const double T = 1000.0;
+	const double T = 20.0;
 	SmoothKernelApproximation f;
 	f.add(data);
 	
 	const int samplesPerUnitTime = 10;
 	const double dt = 1.0 / samplesPerUnitTime;
 	symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
+	std::vector<Particle> evolved_data = data;
 	int i = 0;
 	int n = data.size();
 	for (double t = 0.0; t < T; t += dt) {
 		#pragma omp parallel for
 		for (int i = 0; i < n; i++)
-			stepper.do_step(sys, data[i].q, data[i].p, t, dt);
+			stepper.do_step(sys, evolved_data[i].q, evolved_data[i].p, t, dt);
 	
 		if (++i % samplesPerUnitTime == 0)
-			f.add(data);
+			f.add(evolved_data);
 	}
 	f.save();
 	
@@ -33,7 +34,7 @@ double loglikelihood(std::vector<Particle> data, HamiltonianSystem sys) {
 	#pragma omp parallel for reduction(+:loglikelihood)
 	for (int i = 0; i < n; i++)
 		loglikelihood += log(f(data[i]));
-	return loglikelihood / T;
+	return loglikelihood;
 }
 
 int main(int argc, char *argv[]) {
@@ -49,13 +50,13 @@ int main(int argc, char *argv[]) {
 			break;
 		data.push_back(particle);
 	}
-
+//*
 	// Metropolis-Hastings
 	param_t current_param;
 	
 	// Initialize arbitrary starting point.
 	for (int i = 0; i < current_param.size(); i++)
-		current_param[i] = 1;
+		current_param[i] = argc - 1 > i ? atof(argv[1 + i]) : 1;
 	
 	std::random_device rd;
 	std::mt19937 engine(rd());
@@ -80,12 +81,12 @@ int main(int argc, char *argv[]) {
 	}
 /*/	
 	// Calculate likelihoods for all alpha.
-	param_t current_param;
 	for (double alpha = 1.0; alpha < 3.0; alpha += 0.1) {
+		param_t current_param;
 		current_param[0] = alpha;
 		std::cout << alpha << '\t' << loglikelihood(data, HamiltonianSystem(current_param)) << std::endl;
 	}
-*/
+//*/
 	
 	//std::cout << loglikelihood(data, HamiltonianSystem(1.8)) << std::endl;
 }

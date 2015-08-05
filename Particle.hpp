@@ -28,6 +28,8 @@ class HamiltonianSystem {
 	// Assume the position derivative is p.
 	// Returns the momentum derivative.
 	void operator()(const vector_t &q, vector_t &dpdt) const {
+		
+		// Logarithmic potential
 		dpdt[0] = -q[0] * (param[0] + q[0]*q[0] + q[1]*q[1]/param[1]);
 		dpdt[1] = -q[1]/param[1] * (param[0] + q[0]*q[0] + q[1]*q[1]/param[1]);
 		
@@ -45,7 +47,12 @@ class HamiltonianSystem {
 };
 
 double prior(const param_t &param) {
-	return param[0] >= 0 && param[1] >= 0 && ? 1 : 0;
+	for (double p : param)
+		if (p < 0)
+			return 0;
+	if (param[1] <= 0.5 || param[1] >= 1.08*1.08)
+		return 0;
+	return 1;
 };
 
 std::ostream &operator<<(std::ostream &os, const param_t &param) {
