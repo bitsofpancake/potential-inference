@@ -37,6 +37,10 @@ double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem 
 	return loglikelihood;
 }
 
+double annealing_schedule(int t) {
+	return 1.0 * exp(-t / 1000.0);
+}
+
 int main(int argc, char *argv[]) {
 
 	// Read data from stdin
@@ -61,10 +65,11 @@ int main(int argc, char *argv[]) {
 	std::random_device rd;
 	std::mt19937 engine(rd());
 	std::uniform_real_distribution<double> acceptance(0, 1);
-	std::normal_distribution<double> jumping(0, 0.1);
 	double current_loglikelihood = log(prior(current_param)) + loglikelihood(data, HamiltonianSystem(current_param));
+	int iteration = 0;
 	while (true) {
 		param_t candidate_param;
+		std::normal_distribution<double> jumping(0, annealing_schedule(iteration++));
 		for (int i = 0; i < candidate_param.size(); i++)
 			candidate_param[i] = jumping(engine) + current_param[i];
 	
