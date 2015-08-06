@@ -6,37 +6,7 @@
 #include "Particle.hpp"
 
 using namespace boost::numeric::odeint;
-/*
-double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem &sys) {
-	// Generate the distribution function
-	const double T = 20.0;
-	SmoothKernelApproximation f;
-	f.add(data);
-	
-	const int samplesPerUnitTime = 10;
-	const double dt = 1.0 / samplesPerUnitTime;
-	symplectic_rkn_sb3a_mclachlan<vector_t> stepper;
-	std::vector<Particle> evolved_data = data;
-	int i = 0;
-	int n = data.size();
-	for (double t = 0.0; t < T; t += dt) {
-		#pragma omp parallel for
-		for (int i = 0; i < n; i++)
-			stepper.do_step(sys, evolved_data[i].q, evolved_data[i].p, t, dt);
-	
-		if (++i % samplesPerUnitTime == 0)
-			f.add(evolved_data);
-	}
-	f.save();
-	
-	// Multiply likelihoods together.
-	double loglikelihood = 0.0;
-	#pragma omp parallel for reduction(+:loglikelihood)
-	for (int i = 0; i < n; i++)
-		loglikelihood += log(f(data[i]));
-	return loglikelihood;
-}
-*/
+
 double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem &sys) {
 	// Generate the distribution function
 	const double T = 20.0;
@@ -68,7 +38,7 @@ double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem 
 			}
 		}
 		
-		// Advance t -- necessary because of the multithreading. 
+		// Advance t. 
 		while (t <= tf)
 			t += dt;
 		
@@ -85,13 +55,36 @@ double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem 
 	// Multiply likelihoods together.
 	double loglikelihood = 0.0;
 	for (int i = 0; i < n; i++)
-		loglikelihood += log(likelihoods[i]);
+		loglikelihood += log(likelihoods[i] / T);
 	return loglikelihood;
 }
 
 double annealing_schedule(int t) {
 	return 1.0 * exp(-t / 500.0);
 }
+
+/*
+// Use this to benchmark
+int main(int argc, char *argv[]) {
+
+	// Read data from stdin
+	std::vector<Particle> data;
+	while (true) {
+		Particle particle;
+		bool success = false;
+		for (int i = 0; i < 2*dim; i++)
+			success = std::cin >> particle.coords[i];
+		if (!success)
+			break;
+		data.push_back(particle);
+	}
+	
+	param_t current_param;
+	for (int i = 0; i < current_param.size(); i++)
+		current_param[i] = argc - 1 > i ? atof(argv[1 + i]) : 1;
+	std::cout << loglikelihood(data, HamiltonianSystem(current_param)) << std::endl;
+}
+*/
 
 int main(int argc, char *argv[]) {
 
@@ -106,6 +99,7 @@ int main(int argc, char *argv[]) {
 			break;
 		data.push_back(particle);
 	}
+	
 //*
 	// Metropolis-Hastings
 	param_t current_param;
