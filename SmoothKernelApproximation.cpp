@@ -51,9 +51,19 @@ SmoothKernelApproximation_KDTree::SmoothKernelApproximation_KDTree() :
 	adaptor(data, bandwidth),
 	tree(dim*2, adaptor) {};
 
-void SmoothKernelApproximation_KDTree::add(const std::vector<Particle> others) {
-	data.insert(data.end(), others.begin(), others.end());
+void SmoothKernelApproximation_KDTree::add(const std::vector<Particle> &others) {
+	points += others.size();
+	data.reserve(points);
+	
 	for (const Particle &particle : others) {
+		bool isnan = false;
+		for (int i = 0; i < 2*dim; i++)
+			if (!std::isfinite(particle.coords[i]))
+				isnan = true;
+		if (isnan)
+			continue;
+		
+		data.push_back(particle);
 		for (int i = 0; i < 2*dim; i++)
 			accumulator[i](particle.coords[i]);
 	}
@@ -62,15 +72,19 @@ void SmoothKernelApproximation_KDTree::add(const std::vector<Particle> others) {
 void SmoothKernelApproximation_KDTree::save() {
 	// Calculate bandwidth, via Scott's rule.
 	for (int i = 0; i < 2*dim; i++) {
-		bandwidth[i] = sqrt(variance(accumulator[i])) * pow(data.size(), -1.0 / (4 + 2 * dim));
+		bandwidth[i] = data.size() > 1 ? sqrt(variance(accumulator[i])) * pow(data.size(), -1.0 / (4 + 2 * dim)) : 1;
 		vol *= bandwidth[i];
+		
+		// To-do: should we care if bandwidth[i] is infinite?
 	}
 	
 	tree.buildIndex();
 };
 
-double SmoothKernelApproximation_KDTree::operator()(const Particle a) const {
-	
+double SmoothKernelApproximation_KDTree::operator()(const Particle &a) const {	
+	if (points == 0)
+		return 0;
+
 	Particle scaled;
 	for (int i = 0; i < 2*dim; i++)
 		scaled.coords[i] = a.coords[i] / bandwidth[i];
@@ -87,7 +101,7 @@ double SmoothKernelApproximation_KDTree::operator()(const Particle a) const {
 		value += kernel(sqrt(neighbor.second));
 	}
 		
-	return value / data.size() / vol;
+	return value / points / vol;
 };
 
 SmoothKernelApproximation_KDTree::KDAdaptor::KDAdaptor(std::vector<Particle> &data, double (&bandwidth)[dim*2])

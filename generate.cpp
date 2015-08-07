@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 	{
 		std::random_device rd;
 		std::mt19937 engine(rd());
-		std::uniform_real_distribution<double> rand(0.15, 1.5);
+		std::uniform_real_distribution<double> rand(0.1, 3);
 		std::discrete_distribution<int> rand_sign {-1, 1};
 		
 		#pragma omp for

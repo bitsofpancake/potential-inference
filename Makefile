@@ -12,7 +12,7 @@ generate.o: generate.cpp Particle.hpp
 infer: infer.o SmoothKernelApproximation.o
 	g++ -L$(LD_LIBRARY_PATH) $(LINKERFLAGS) infer.o SmoothKernelApproximation.o -o infer
 
-infer.o: infer.cpp Particle.hpp
+infer.o: infer.cpp Particle.hpp AdaptiveMetropolisHastings.hpp
 	g++ $(CFLAGS) infer.cpp
 	
 SmoothKernelApproximation.o: SmoothKernelApproximation.cpp Particle.hpp

@@ -18,7 +18,8 @@ double sign(const double x) {
 	return std::signbit(x) ? -1.0 : 1.0;
 }
 
-typedef std::array<double, 2> param_t; // (R^2, q^2)
+const int param_size = 2;
+typedef std::array<double, param_size> param_t; // (R^2, q^2)
 class HamiltonianSystem {
 	const param_t param;
 
@@ -32,8 +33,8 @@ class HamiltonianSystem {
 		// Logarithmic potential
 		dpdt[0] = -q[0] * (param[0] + q[0]*q[0] + q[1]*q[1]/param[1]);
 		dpdt[1] = -q[1]/param[1] * (param[0] + q[0]*q[0] + q[1]*q[1]/param[1]);
-		
-	//	dpdt[0] = -0.5 * pow(fabs(q[0]), param[0] - 1) * sign(q[0]);
+	
+	//	dpdt[0] = -param[0] * pow(fabs(q[0]), param[0] - 1) * sign(q[0]);
 	/*	
 		// Toy galaxy potential
 		double r_cubed_inv = pow(q[0]*q[0] + q[1]*q[1] + q[2]*q[2], -1.5);
@@ -48,10 +49,10 @@ class HamiltonianSystem {
 
 double prior(const param_t &param) {
 	for (double p : param)
-		if (p < 0)
+		if (p <= 0)
 			return 0;
-	if (param[1] <= 0.5 || param[1] >= 1.08*1.08)
-		return 0;
+	/*if (param[1] <= 0.5 || param[1] >= 1.08*1.08)
+		return 0;*/
 	return 1;
 };
 

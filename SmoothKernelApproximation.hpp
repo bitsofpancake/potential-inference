@@ -43,6 +43,7 @@ class SmoothKernelApproximation_KDTree {
 	mutable VarianceAccumulator accumulator[2*dim];
 	double bandwidth[2*dim];
 	double vol = 1.0;
+	int points = 0;
 	
 	KDAdaptor adaptor;
 	KDTree tree;
@@ -51,9 +52,9 @@ class SmoothKernelApproximation_KDTree {
 
  public:
 	SmoothKernelApproximation_KDTree();
-	void add(const std::vector<Particle> others);
+	void add(const std::vector<Particle> &others);
 	void save();
-	double operator()(const Particle a) const;
+	double operator()(const Particle &a) const;
 };
 
 typedef SmoothKernelApproximation_KDTree SmoothKernelApproximation;

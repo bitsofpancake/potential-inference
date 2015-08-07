@@ -4,6 +4,7 @@
 #include <boost/numeric/odeint.hpp>
 #include "SmoothKernelApproximation.hpp"
 #include "Particle.hpp"
+#include "AdaptiveMetropolisHastings.hpp"
 
 using namespace boost::numeric::odeint;
 
@@ -59,10 +60,6 @@ double loglikelihood(const std::vector<Particle> &data, const HamiltonianSystem 
 	return loglikelihood;
 }
 
-double annealing_schedule(int t) {
-	return 1.0 * exp(-t / 500.0);
-}
-
 /*
 // Use this to benchmark
 int main(int argc, char *argv[]) {
@@ -99,7 +96,7 @@ int main(int argc, char *argv[]) {
 			break;
 		data.push_back(particle);
 	}
-	
+
 //*
 	// Metropolis-Hastings
 	param_t current_param;
@@ -107,30 +104,33 @@ int main(int argc, char *argv[]) {
 	// Initialize arbitrary starting point.
 	for (int i = 0; i < current_param.size(); i++)
 		current_param[i] = argc - 1 > i ? atof(argv[1 + i]) : 1;
-	
+			
 	std::random_device rd;
 	std::mt19937 engine(rd());
 	std::uniform_real_distribution<double> acceptance(0, 1);
 	double current_loglikelihood = log(prior(current_param)) + loglikelihood(data, HamiltonianSystem(current_param));
-	int iteration = 0;
+	
+	AdaptiveMetropolisHastingsProposalDistribution<param_size> proposal;
+	proposal.add(current_param.data());
 	while (true) {
 		param_t candidate_param;
-		std::normal_distribution<double> jumping(0, annealing_schedule(iteration));
-		for (int i = 0; i < candidate_param.size(); i++)
-			candidate_param[i] = jumping(engine) + current_param[i];
+		proposal.next(current_param.data(), candidate_param.data());
 	
 		double candidate_loglikelihood = log(prior(candidate_param)) + loglikelihood(data, HamiltonianSystem(candidate_param));
 		double acceptance_ratio = exp(candidate_loglikelihood - current_loglikelihood);
+		//std::cerr << acceptance_ratio << "\te^" << (candidate_loglikelihood - current_loglikelihood) << std::endl;
 		if (acceptance_ratio >= acceptance(engine)) {
 			//std::cout << candidate_param << std::endl;
 			current_param = candidate_param;
 			current_loglikelihood = candidate_loglikelihood;
-			iteration++;
+			std::cerr << "Current loglikelihood: " << current_loglikelihood << "; param: " << current_param << std::endl;
+			proposal.add(current_param.data());
 		} else {
 			//std::cout << candidate_param << " (rejected)" << std::endl;
 		}
 		std::cout << candidate_param << candidate_loglikelihood << std::endl;
 	}
+	
 /*/	
 	// Calculate likelihoods for all alpha.
 	for (double alpha = 1.0; alpha < 3.0; alpha += 0.1) {
