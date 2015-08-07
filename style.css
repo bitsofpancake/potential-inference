@@ -1,0 +1,39 @@
+html {
+	font-family: helvetica;
+	background-color: #030306;
+}
+
+body {
+	margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, header {
+	font-family: "Franklin Gothic Medium";
+	margin: 0;
+}
+
+header {
+	font-size: 1.25em;
+	background-color: #4D2A79;
+	color: white;
+	padding: 2em;
+	text-align: center;
+	margin-bottom: 3em;
+}
+
+header div {
+	margin-top: 0.5em;
+	font-size: 1.25em;
+}
+
+article {
+	background-color: #F2F2F2;
+	width: 600px;
+	padding: 1.25em 1.5em 0.5em;
+	margin: 1em auto;
+}
+
+p {
+	line-height: 1.45em;
+	margin: 1em 0;
+}
