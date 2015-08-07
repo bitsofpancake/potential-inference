@@ -1,10 +1,16 @@
 html {
 	font-family: helvetica;
 	background-color: #030306;
+	min-width: 800px;
 }
 
 body {
 	margin: 0;
+	
+	background-image: url(images/milky_way.jpg);
+	background-size: 100%;
+	background-position: right 500px;
+	background-repeat: no-repeat;
 }
 
 h1, h2, h3, h4, h5, h6, header {
@@ -30,10 +36,40 @@ article {
 	background-color: #F2F2F2;
 	width: 600px;
 	padding: 1.25em 1.5em 0.5em;
-	margin: 1em auto;
+	margin: 1em auto 2em;
+	line-height: 1.5em;
 }
 
 p {
-	line-height: 1.45em;
 	margin: 1em 0;
+}
+li {
+	margin: 0.5em 0;
+}
+
+var {
+	font-size: 0.9em;
+}
+code {
+	display: block;
+	text-align: center;
+	margin: 0 0 -0.5em;
+}
+
+figure {
+	text-align: center;
+	width: 300px;
+    margin: 0.75em auto;
+    background-color: white;
+    padding: 1em;
+	border: 1px solid #ccc;
+}
+figcaption {
+	font-size: 0.8em;
+	color: #333;
+	margin: 1em 0 0;
+	line-height: 1.25em;
+}
+figure img, figure video {
+	width: 300px;
 }
