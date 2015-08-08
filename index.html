@@ -3,8 +3,7 @@
 	<head>
 		<title>Finding the Mass Distribution of the Milky Way - Casey Chu</title>
 		<link href="style.css" type="text/css" rel="stylesheet" />
-		<link href="katex/katex.min.css" type="text/css" rel="stylesheet" />
-		<script src="katex/katex.min.js" type="text/javascript"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.css" type="text/css" rel="stylesheet" />
 	</head>
 	<body>
 		<header>
@@ -15,27 +14,28 @@
 		<article>
 			<h2>Introduction</h2>
 			
-			<p>One particularly puzzling observation about galaxies we’ve observed is that the rotational velocities of the stars in them do not match theoretically predicted values. Specifically, we expect stars far from the center of galaxies to move much more slowly than they actually do, based on calculations assuming that the galaxy has a mass distribution of stars deduced from visible starlight. Today, astrophysicists postulate the existence of an invisible dark matter halo surrounding these galaxies, extra mass that would explain the discrepancy. However, the nature of these dark matter halos is largely unknown. One natural place to start investigating is our own galaxy: what is the distribution of dark matter in the Milky Way?</p>
+			<p>One particularly puzzling observation about galaxies we've observed is that stars at the edge of the galaxies seem to rotate too quickly. Today, astrophysicists postulate the existence extra mass that would explain the discrepancy, in the form of an enormous, invisible halo of <em>dark matter</em> that surrounds these galaxies. However, the nature of these dark matter halos is largely unknown. One natural place to start is to investigate the distribution of dark matter in our own Milky Way. But how do we measure something we can't see?</p>
 
-			<p>By Poisson’s equation, we know that finding the distribution of matter in a system (in this case, our galaxy) is equivalent to finding the gravitational potential of the system, as a function of position. One idea is to use a statistical learning technique called Bayesian inference to constrain the gravitational potential from stellar observations. We are in luck, because the Gaia spacecraft is currently collecting the positions and velocities of about one billion stars in our Milky Way – about 1% of the stars in our galaxy. From this data, we expect to be able to infer the likelihood of the galaxy actually having a given potential. Current techniques, however, rely on calculating probabilities from complicated analytic expressions for action-angle coordinates in different possible potentials. This is hard to generalize, as analytic expressions for these coordinates are not available for even moderately complicated forms of the potential. Instead, is it feasible to perform the calculation of the necessary probabilities numerically, sidestepping this problem?</p>
+			<p>One way to study dark matter is to observe its gravitational effect on visible objects: stars. And we are in luck, because the spacecraft <a href="https://en.wikipedia.org/wiki/Gaia_(spacecraft)" target="_blank"><em>Gaia</em></a> is currently recording the positions and velocities of an impressive one billion stars in the Milky Way. In theory, the kinematic information of these <em>tracer particles</em> contains large amounts of statistical information about the gravitational potential they are traveling in. A well-known equation called <a href="https://en.wikipedia.org/wiki/Poisson%27s_equation" target="_blank">Poisson's equation</a> relates the gravitational potential of a system to its mass distribution, so knowing the potential, we can easily calculate the mass distribution.</p>
+			
+			<p>We've created a simple, numerical algorithm to extract this potential information: given a set of observations of positions and velocities of particles (in this case, stars), we are able to infer the potential in which they are traveling.</p>
 		</article>
 	
-		<article style="margin-top: 450px">
+		<article> <!--style="margin-top: 450px"-->
 			<h2>The fundamental assumption: phase-mixing</h2>
 			
-			<p>The algorithm we developed relies on the system being <em>phase-mixed</em>. To get an idea of what a phase-mixed system looks like, consider particles evolved under the potential <var>\Phi(x) = \frac{1}{2}|x|^\alpha</var> for <var>\alpha = 1.5</var>. The following video demonstrates what happens when an initially compact group of particles is evolved in time:</p>
+			<p>The algorithm we developed relies on the system being <em>phase-mixed</em>. To get an idea of what a phase-mixed system looks like, consider particles evolved under the potential <var>\Phi(x) = \frac{1}{2}|x|^\alpha</var> for <var>\alpha = 1.5</var>. The following video demonstrates what happens when an initially compact group of particles is evolved in time, plotted in phase space:</p>
 			
 			<figure>
 				<video controls>
 					<source src="images/phase_mixing.webm" type="video/webm" />
-					<source src="images/phase_mixing.avi" type="video/mp4" />
 				</video>
 				<figcaption><b>Figure 1:</b> The phase-mixing of 200 particles.</figcaption>
 			</figure>
 			
 			<p>Notice that as time progresses, the initial configuration is lost, and the particles approach a configuration that is macroscopically steady-state (although, of course, the particles are still moving microscopically). This is an important result known as <a href="https://en.wikipedia.org/wiki/Jeans%27s_theorem" target="_blank">Jeans's theorem</a>.</p>
 			
-			<p>Importantly, take a look at the same set of particles evolved under different potentials (in this case, different values of <var>\alpha</var>):</p>
+			<p>Importantly, different potentials cause the initial configuration to approach slightly different steady-state "shapes." Take a look at the same set of particles evolved to steady-state under different potentials (in this case, different values of <var>\alpha</var>):</p>
 			
 			<figure style="width: 90%">
 				<img style="width: 30%" src="images/evolved_1.5.png" />
@@ -44,7 +44,7 @@
 				<figcaption><b>Figure 2:</b> Steady-state configurations for <var>\alpha = 1.5</var>, <var>\alpha = 1.8</var>, and <var>\alpha = 2.5</var>.</figcaption>
 			</figure>
 			
-			<p>Notice how the different potentials cause the initial configuration to approach slightly different steady-state "shapes." This property will turn out to be crucial to our method.</p>
+			<p>This property, that different potentials yield different steady-state configurations, will turn out to be crucial to our method.</p>
 
 		</article>
 		
@@ -54,40 +54,42 @@
 			<p>Suppose that we are given particles' positions and velocities taken from an unknown potential, and our aim is to guess which potential these particles come from. We may assume that they are drawn from a phase-mixed system.</p>
 			
 			<figure>
-				<img src="images/sample_data.png" />
+				<img src="images/unknown.png" />
 				<figcaption><b>Figure 3:</b> Particles observed<br /> from an unknown potential.</figcaption>
 			</figure>
 
 			<p>Our algorithm relies on the following insight: particles drawn from a steady-state distribution will remain in steady-state only if evolved under the correct potential. If we evolve the particles under an incorrect potential, the system will tend towards a <em>different</em> steady-state configuration.</p>
 			
-			<p>Then a simple algorithm is to guess a bunch of different trial potentials, evolve the observed particles under them, and see which potentials best preserve the original configuration. The following figure illustrates the evolution of the particles in Figure 3 after many time steps.</p>
+			<p>Then an algorithm might be simply to guess a bunch of different potentials, evolve the observed particles under these trial potentials, and see which potentials best preserve the original configuration. The following figure illustrates the evolution of the particles in Figure 3 after many time steps.</p>
 			
-			<figure>
-				<img src="images/sample_data.png" />
+			<figure style="width: 90%">
+				<video controls loop style="width: 100%">
+					<source src="images/evolution.webm" type="video/webm" />
+				</video>
 				<figcaption><b>Figure 4:</b> The evolution of the observed particles under different potentials.</figcaption>
 			</figure>
 			
-			<p>In this simple example, the particles most likely come from an <var>\alpha = 1.5</var> potential, because the evolved configuration most resembles the observed distribution.</p>
+			<p>In this simple example, the particles most likely come from an <var>\alpha = 1.5</var> potential, because the configuration of the particles evolved under that potential most resembles the original, observed distribution.</p>
 		</article>
 		
 		<article>
 			<h2>Mathematical derivation</h2>
 			
-			<p>Rather than simply choosing the best potential by eye, let us numerically quantify how good a trial potential is, i.e. how close an evolved configuration is to the observed particles. Let's assign a "likelihood" score to each trial potential, with higher scores corresponding to closer configurations.</p>
+			<p>Rather than simply choosing the best potential by eye, let us quantify how good a trial potential is, i.e. how close an evolved configuration is to the observed particles. Let's assign a "likelihood" score to each trial potential, with higher scores corresponding to closer configurations.</p>
 			
 			<p>
-				First, we define a function that encodes the distribution of our observed particles after having been evolved for a time <var>t</var> under a potential <var>\Phi</var>. Define a function of <var>x</var>, <var>v</var>, and <var>t</var>:
+				First, we define a function that encodes the distribution of our observed particles after having been evolved for a time <var>t</var> under a potential <var>\Phi</var>. We use a technique called <a href="https://en.wikipedia.org/wiki/Kernel_density_estimation" target="_blank">kernel density estimation</a> to approximate the phase-space density at time <var>t</var>; define a function <var>f</var> to be
 				<code>f(x,v;t \,|\, \Phi) = \sum_i K(x_i(t) - x)\, K(v_i(t) - v),</code>
-				where <var>x_i(t)</var> and <var>v_i(t)</var> denote the position and velocity of the <var>i</var>th particle evolved to time <var>t</var> under the potential <var>\Phi</var>, and <var>K(\cdot)</var> is a <em>kernel</em>, a function that is <var>0</var> except around <var>0</var>. For example, a typical kernel is a Gaussian centered at <var>0</var>. The result is that this function <var>f(x,v;t\,|\,\Phi)</var> gives the density of particles at <var>x</var> and <var>v</var> and time <var>t</var>.
+				where <var>x_i(t)</var> and <var>v_i(t)</var> denote the position and velocity of the <var>i</var>th particle evolved to time <var>t</var> under the potential <var>\Phi</var>, and <var>K(\cdot)</var> is a <em>kernel</em>, a function that is non-zero only around <var>0</var>. For example, a typical kernel is a Gaussian centered at <var>0</var>. The result is that this function <var>f(x,v;t\,|\,\Phi)</var> gives an approximation to the phase-space density of particles at <var>x</var> and <var>v</var> and time <var>t</var>.
 			</p>
 			
 			<p>
-				Now, we can define a time-averaged version of <var>f</var>:
+				Next, we define a time-averaged version of <var>f</var>:
 				<code>f(x,v \,|\, \Phi) = \frac{1}{T}\int_0^T f(x,v;t\,|\,\Phi) \,dt.</code>
-				This is an <a href="https://en.wikipedia.org/wiki/Kernel_density_estimation" target="_blank">approximation</a> to the density of particles in the steady-state configuration under a potential <var>\Phi</var>.
+				This approximates the steady-state phase-space density of particles evolved under a potential <var>\Phi</var>.
 			</p>
 			
-			<p>If properly normalized, we can treat this density function as a probability distribution function. Then the probability of observing the positions and velocities we observed assuming a particular potential is
+			<p>If <var>f</var> is properly normalized, we can treat this density function as a probability distribution function. Then the probability of observing the positions and velocities we observed assuming a particular potential is
 				<code>
 					P(x_1,v_1,\ldots,x_n,v_n\,|\,\Phi) = \prod_i f(x_i, v_i \,|\, \Phi),
 				</code>
@@ -108,8 +110,8 @@
 			<p>Our algorithm to infer general potentials from observed <var>x_i,v_i</var> is as follows.</p>
 			
 			<ol>
-				<li>Assume a form of the potential by parameterizing the potential with any number of parameters <var>\alpha_i</var>. This parameterization step is general, as most functions can be approximated with, for example, a power series.</li>
-				<li>Guess a set of values for the parameters <var>\alpha_i</var>. One intelligent way to choose parameters is through the <a href="https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm">Metropolis-Hastings algorithm</a>.</li>
+				<li>Assume a form of the potential by parameterizing the potential with any number of parameters <var>\alpha_j</var>. This parameterization step can be quite general, as most functions can be approximated with, for example, a power series.</li>
+				<li>Guess a set of values for the parameters <var>\alpha_j</var>. One intelligent way to choose parameters is using the <a href="https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm">Metropolis-Hastings algorithm</a>.</li>
 				<li>Calculate the posterior&mdash;the likelihood score&mdash;corresponding to the chosen parameters.</li>
 				<li>Repeat steps 2&ndash;3 indefinitely. We can report either the single set of parameters with the maximum likelihood, or a range of parameter values with high likelihoods.</li>
 			</ol>
@@ -119,20 +121,29 @@
 			<h2>Preliminary results</h2>
 			
 			<p>We have tested the algorithm for a simple 2D potential, the logarithmic potential. It models a simple galaxy. Its potential is
-				<code>\Phi(x,z) = \log(x^2 + \frac{z^2}{q^2} + R_c^2),</code>
-				where <var>q</var> and <var>R_c</var> are parameters, indicating X and Y respectively.
+				<code>\Phi(x,y) = \log(x^2 + \frac{y^2}{q^2} + R_c^2),</code>
+				where <var>q</var> and <var>R_c</var> are parameters that describe the shape of the potential (the ellipticity and core radius, respectively). Below is a video of particles traveling in a logarithmic potential.
 			</p>
 			
-			<p>We generated mock data from this potential and tested the inference algorithm on the resulting "observations." The results for <var>n = 10^4</var> particles and true parameters of <var>q=0.8</var> and <var>R_c=1.5</var> are shown in the following figure.</p>
+			<figure style="width: 400px">
+				<video controls loop style="width: 100%">
+					<source src="images/logarithmic_potential.webm" type="video/webm" />
+				</video>
+				<figcaption>
+					<b>Figure 5</b>: "Stars" in a logarithmic potential.
+				</figcaption>
+			</figure>
+			
+			<p>We generated mock data from this potential and tested the inference algorithm on the resulting "observations." The results for <var>n = 10^5</var> particles and true parameters of <var>q^2=0.8</var> and <var>R_c^2=1.5</var> are shown in the following figure.</p>
 			
 			<figure>
 				<img />
 				<figcaption>
-					<b>Figure 5</b>: The logarithm of the posterior distribution of the parameters.
+					<b>Figure 6</b>: The logarithm of the posterior distribution of the parameters.
 				</figcaption>
 			</figure>
 			
-			<p>As you can see, the posterior distribution correctly peaks near the true values of the parameters, and thus, the algorithm is successful.</p>
+			<p>As you can see, the posterior distribution correctly peaks near the true values of the parameters, and thus, the algorithm is successful!</p>
 		</article>
 		
 		<article>
@@ -141,7 +152,8 @@
 			<p>Lorem ipsum</p>
 		</article>
 		
-		<script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.js"></script>
+		<script type="text/javascript">
 			[].forEach.call(document.querySelectorAll('var, code'), function (el) {
 				katex.render(el.innerHTML, el, { displayMode: el.tagName === 'CODE' });
 			});

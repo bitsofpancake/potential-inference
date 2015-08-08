@@ -1,21 +1,32 @@
 html {
 	font-family: helvetica;
-	background-color: #030306;
 	min-width: 800px;
+	max-width: 2000px;
+	margin: 0 auto;
+	background-color: #f0f0f0;
+	/*background-image: url(http://www.startextures.com/starnetblog/wp-content/uploads/2010/09/starnetblog_cloudy_starfield_texture4.jpg);*/
 }
 
 body {
 	margin: 0;
+	padding: 0 0 5em;
+	box-shadow: 0 0 4em #666;
 	
+	background-color: #030306;
+	/*
 	background-image: url(images/milky_way.jpg);
 	background-size: 100%;
 	background-position: right 500px;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat;*/
 }
 
 h1, h2, h3, h4, h5, h6, header {
 	font-family: "Franklin Gothic Medium";
 	margin: 0;
+}
+
+a:link {
+	
 }
 
 header {
