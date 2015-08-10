@@ -1,36 +1,37 @@
-@media print 
-{
-   @page
-   {
-    size: 30in 30in;
-  }
+@media print {
+	@page {
+		size: 36in 40in;
+	}
 }
 
 html {
+	font-size: 24pt;
 	font-family: helvetica, arial, sans-serif;
-	min-width: 800px;
-	/*max-width: 2000px;*/
-	max-width: 44in;
-	margin: 0 auto;
 	background-color: #fff;
+	box-sizing: border-box;
 	/*background-image: url(http://www.startextures.com/starnetblog/wp-content/uploads/2010/09/starnetblog_cloudy_starfield_texture4.jpg);*/
-	
+}
 
+* {
+	box-sizing: inherit;
 }
 
 body {
-	margin: 0;
+	margin: 1em auto;
 	padding: 0 0 5em;
 	box-shadow: 0 0 4em #666;
 	
+	width: 36in;
+	height: 40in;
+	
 	background-color: #ddd;
-	/*background-color: #030306;*/
 	/*
+	background-color: #030306;
 	background-image: url(images/milky_way.jpg);
 	background-size: 100%;
 	background-position: right 500px;
-	background-repeat: no-repeat;*/
-	
+	background-repeat: no-repeat;
+	*/
 	counter-reset: figure;
 }
 
@@ -46,7 +47,7 @@ a:link {
 main {
 	display: flex;
 	flex-flow: column wrap;
-	height: 3200px;
+	height: 100%;
 	align-content: center;
 }
 
@@ -55,7 +56,7 @@ header {
 	color: white;
 	padding: 2em;
 	text-align: center;
-	margin-bottom: 3em;
+	margin-bottom: 1em;
 	background-image: url(images/northwestern.png);
 	background-repeat: no-repeat;
 	background-position: 1em 50%;
@@ -71,8 +72,9 @@ header img {
 }
 
 article {
-	background-color: #F2F2F2;
-	width: 600px;
+	/*background-color: #F2F2F2;*/
+	background-color: #fff;
+	width: 11in;
 	padding: 1.25em 1.5em 0.5em;
 	/*margin: 1em auto 2em;*/
 	margin: 1em;
@@ -93,15 +95,15 @@ code {
 	display: block;
 	text-align: center;
 	margin: 0 0 -0.5em;
+	font-size: 0.9em;
 }
 
 figure {
 	text-align: center;
-	width: 300px;
     margin: 0.75em auto;
     background-color: white;
-    padding: 1em;
-	border: 1px solid #eee;
+    padding: 0.5em;
+	/*border: 1px solid #eee;*/
 }
 figcaption::before {
 	counter-increment: figure;
@@ -111,9 +113,18 @@ figcaption::before {
 figcaption {
 	font-size: 0.8em;
 	color: #333;
-	margin: 1em 0 0;
+	margin: 2em 0 0;
 	line-height: 1.25em;
 }
-figure img, figure video {
+
+figure.row {
+	width: 100%;
+	line-height: 1em;
+}
+figure.row img {
 	width: 300px;
 }
+/*
+figure img, figure video {
+	width: 300px;
+}*/
