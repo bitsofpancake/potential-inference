@@ -3,14 +3,14 @@
 		size: 36in 40in;
 	}
 	body {
-		box-shadow: none !important;
-		margin: 0 !important;
+	/*	box-shadow: none !important;
+		margin: 0 !important;*/
 	}
 }
 
 html {
 	font-size: 0.33333in;
-	font-family: georgia, helvetica, arial, sans-serif;
+	font-family: helvetica, arial, sans-serif;
 	background-color: #fff;
 	box-sizing: border-box;
 }
@@ -21,9 +21,10 @@ html {
 
 body {
 	position: relative;
-	margin: 1em auto;
-	padding: 0 0 5em;
-	box-shadow: 0 0 4em #666;
+	margin: 0;
+	padding: 0;
+	/*margin: 1em auto;
+	box-shadow: 0 0 4em #666;*/
 	
 	width: 36in;
 	height: 40in;
@@ -51,17 +52,22 @@ a:link {
 main {
 	display: flex;
 	flex-flow: column wrap;
-	height: 100%;
 	align-content: center;
-	margin: 1em;
+	padding: 0.375in;
+	position: absolute;
+	top: 3in;
+	bottom: 0;
+	left: 0;
+	right: 0;
 }
 
 header {
-	font-size: 1.25em;
+	height: 3in;
 	color: white;
-	padding: 1em 2em;
+	padding: 0.5in;
 	text-align: center;
 	
+	font-size: 1.25em;
 	background-image: url(images/northwestern.svg);
 	background-position: 0.5em 0;
 	background-size: auto 200%;
@@ -82,8 +88,7 @@ article {
 	background-color: #fff;
 	width: 11in;
 	padding: 1.25em 1.5em 0.5em;
-	/*margin: 1em auto 2em;*/
-	margin: 1em;
+	margin: 0.375in;
 	line-height: 1.5em;
 }
 
@@ -110,7 +115,6 @@ figure {
     background-color: white;
     padding: 0.5em;
 	line-height: 1em;
-	/*border: 1px solid #eee;*/
 }
 figcaption::before {
 	counter-increment: figure;
@@ -138,7 +142,3 @@ figure.float figcaption {
 figure.float img {
 	width: 100%;
 }
-/*
-figure img, figure video {
-	width: 300px;
-}*/
