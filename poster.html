@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Finding the Mass Distribution of the Milky Way - Casey Chu</title>
+		<title>Inferring the Mass Distribution of the Milky Way - Casey Chu</title>
 		<link href="poster.css" type="text/css" rel="stylesheet" />
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.css" type="text/css" rel="stylesheet" />
 	</head>
@@ -13,11 +13,11 @@
 		
 		<main>			
 			<article>
-				<h2>How do we measure what we can't see?</h2>
+				<h2>How do we measure something we can't see?</h2>
 				
 				<p>Astrophysicists generally accept that there is a massive but invisible halo of dark matter around most galaxies. However, the nature of this dark matter is largely unknown. One natural place to start investigating these dark matter halos is our own Milky Way. But how do we measure something we can't see?</p>
 
-				<p>One way to study dark matter is to observe its gravitational effect on visible objects: stars. And we're in luck, because the spacecraft <em>Gaia</em> is currently observing the movement of one billion stars the Milky Way. These movements contain large amounts of statistical information about the gravitational potential they are traveling in. If we could infer this potential from the observations, the we could use the well-known Poisson's equation to calculate the mass distribution of the galaxy.</p>
+				<p>One way to study dark matter is to observe its gravitational effect on visible objects: stars. And we're in luck, because the spacecraft Gaia is currently observing the movement of one billion stars the Milky Way. These movements contain large amounts of statistical information about the gravitational potential they are traveling in. If we could infer this potential from the observations, the we could use the well-known Poisson's equation to calculate the mass distribution of the galaxy.</p>
 				
 				<p>We've created a simple, numerical algorithm to extract the gravitational potential from the data. Given a set of observed positions and velocities of particles (stars), we are able to infer the potential in which they are traveling.</p>
 			</article>
@@ -67,7 +67,7 @@
 
 				<p>Our algorithm relies on the following insight. Let's assume we know that the particles we observe are in a steady-state configuration. Then if we evolve them under the correct potential, they will remain in the same, steady-state configuration. Conversely, if we evolve them under an incorrect potential, they will evolve towards a different configuration!</p>
 				
-				<p>Then one algorithm to find the correct potential is to simply to guess a bunch of different potentials, evolve the observed particles under each of these trial potentials, and see which potential best preserves the original configuration. The following figure illustrates the evolution of the particles in Figure 3 under different potentials after many time steps.</p>
+				<p>Then one algorithm to find the correct potential is to simply to guess a bunch of different potentials, evolve the observed particles under each of these trial potentials, and see which potential best preserves the original configuration. The following figure illustrates the evolution of the particles in Figure 3 under different potentials.</p>
 				
 				<figure class="row">
 					<!--
@@ -123,22 +123,22 @@
 					<code>
 						L(\Phi \,|\, x_1,v_1,\ldots,x_n,v_n) = \prod_i f(x_i, v_i \,|\, \Phi),
 					</code>
-					defining
+					where we've defined
 					<code>
 						f(x,v \,|\, \Phi) = \frac{1}{T}\int_0^T\sum_i K(x_i(t) - x)\,K(v_i(t) - v) \,dt,
 					</code>
-					where <var>x_i(t)</var> and <var>v_i(t)</var> denote the position and velocity of the <var>i</var>th particle evolved to time <var>t</var> under the potential <var>\Phi</var>, and <var>K(\cdot)</var> is a <em>kernel function</em>, e.g. a Gaussian centered at <var>0</var>. A derivation is available at <tt>http://bitsofpancake.github.io/potentially-awesome</tt>.
+					where <var>x_i(t)</var> and <var>v_i(t)</var> denote the position and velocity of the <var>i</var>th particle evolved to time <var>t</var> under the potential <var>\Phi</var>, and <var>K(\cdot)</var> is a <em>kernel function</em>, e.g. a Gaussian centered at <var>0</var>. This function is highest for potentials that best preserve the original configuration. A complete derivation is available on the web site.
 				</p>
 			</article>
 			
 			<article>
 				<h2>Summary of the algorithm</h2>
 				
-				<p>Our algorithm to infer the potential from observed <var>x_i,v_i</var> is as follows.</p>
+				<p>Our algorithm to infer the potential from a set of observed positions and velocities is as follows.</p>
 				
 				<ol>
-					<li>Guess a trial potential by choosing a set of values for the parameters of a potential. One intelligent way to choose parameters is using the <em>Metropolis-Hastings algorithm</em>.</li>
-					<li>Calculate the likelihood of observing the data under the chosen potential.</li>
+					<li>Guess a trial potential by choosing a set of values for the parameters of a potential. One intelligent way of choosing parameters is using the <em>Metropolis-Hastings algorithm</em>.</li>
+					<li>Calculate the likelihood of observing the data under the chosen potential, according to the formula in the previous section.</li>
 					<li>Repeat steps 1&ndash;2 indefinitely. We can report either the single set of parameters with the maximum likelihood, or a range of parameter values with high likelihoods.</li>
 				</ol>
 			</article>
@@ -146,11 +146,15 @@
 			<article>
 				<h2>Preliminary results</h2>
 				
-				<p>We have tested the algorithm for a simple 2D potential, the logarithmic potential. It models a simple galaxy. Its potential is
+				<p>We have tested the algorithm for the 2D <em>logarithmic potential</em> given by
 					<code>\Phi(x,y) = \log(x^2 + \frac{y^2}{q^2} + R_c^2),</code>
-					where <var>q</var> and <var>R_c</var> are parameters that describe the shape of the potential. Below is a video of particles traveling in a logarithmic potential.
-				</p>
+					where <var>q</var> and <var>R_c</var> are parameters that describe the shape of the potential. It is a simple model for real galaxies.</p>
 				
+				
+				<figure style="float: right; width: 450px; margin-left: 1em">
+					<img src="images/logarithmic.svg" style="width: 100%" />
+					<figcaption style="margin-top: 0.5em">A contour plot of the likelihood of the parameters. Red is higher; contours are at <var>2^{-2^i}</var> for <var>i=0,\ldots,13</var>.</figcaption>
+				</figure>
 				<!--figure style="width: 400px">
 					<video controls loop style="width: 100%">
 						<source src="images/logarithmic_potential.webm" type="video/webm" />
@@ -158,14 +162,9 @@
 					<figcaption>"Stars" in a logarithmic potential.</figcaption>
 				</figure-->
 				
-				<p>We generated mock data from this potential and tested the inference algorithm on the resulting "observations." The results for <var>n = 10^5</var> particles and true parameters of <var>q^2=0.8</var> and <var>R_c^2=1.5</var> are shown in the following figure.</p>
+				<p>We simulated mock data from this potential and tested the inference algorithm on the resulting "observations." The results for <var>n = 10^4</var> particles and true parameters of <var>q^2=0.8</var> and <var>R_c^2=1.5</var> are shown in the contour plot to the right.</p>
 				
-				<figure>
-					<img />
-					<figcaption>The logarithm of the calculated likelihood of the parameters.</figcaption>
-				</figure>
-				
-				<p>As you can see, the likelihood correctly peaks near the true values of the parameters, meaning that the algorithm is successful!</p>
+				<p>The likelihood correctly peaks near the true values of the parameters, meaning that the algorithm is successful!</p>
 			</article>
 			
 			<article>
@@ -179,11 +178,11 @@
 				</p>
 				
 				<p>
-					Nevertheless, there are several challenges that should be addressed before it applying the algorithm to the Gaia data:
+					Nevertheless, there are several challenges that should be addressed before applying the algorithm to the Gaia data:
 					<ul>
-						<li><b>Computation time:</b> An application to <var>10^9</var> particles currently requires a large supercomputer cluster.</li>
+						<li><b>Computation time:</b> An application to <var>10^9</var> particles, although feasible, currently requires a large supercomputer cluster.</li>
 						<li><b>Noise:</b> The likelihood function is currently quite noisy, which may prevent accurate inference of parameters.</li>
-						<li><b>Confidence intervals:</b> Without a fully Bayesian approach, it is difficult to calculate accurate confidence intervals for the parameters.</li>
+						<li><b>Error bounds:</b> It is currently unclear how to accurately bound the error of the estimated paramters.</li>
 					</ul>
 				</p>
 			</article>

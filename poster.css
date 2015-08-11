@@ -2,6 +2,10 @@
 	@page {
 		size: 36in 40in;
 	}
+	body {
+		box-shadow: none !important;
+		margin: 0 !important;
+	}
 }
 
 html {
@@ -9,7 +13,6 @@ html {
 	font-family: helvetica, arial, sans-serif;
 	background-color: #fff;
 	box-sizing: border-box;
-	/*background-image: url(http://www.startextures.com/starnetblog/wp-content/uploads/2010/09/starnetblog_cloudy_starfield_texture4.jpg);*/
 }
 
 * {
@@ -23,16 +26,16 @@ body {
 	
 	width: 36in;
 	height: 40in;
+	counter-reset: figure;
 	
-	background-color: #ddd;
-	/*
+/*	background-color: #ddd;*/
+
 	background-color: #030306;
 	background-image: url(images/milky_way.jpg);
 	background-size: 100%;
-	background-position: right 500px;
+	background-position: right 24in;
 	background-repeat: no-repeat;
-	*/
-	counter-reset: figure;
+	
 }
 
 h1, h2, h3, h4, h5, h6, header {
@@ -49,17 +52,19 @@ main {
 	flex-flow: column wrap;
 	height: 100%;
 	align-content: center;
+	margin: 1em;
 }
 
 header {
 	font-size: 1.25em;
 	color: white;
-	padding: 2em;
+	padding: 1em 2em;
 	text-align: center;
-	margin-bottom: 1em;
-	background-image: url(images/northwestern.png);
+	
+	background-image: url(images/northwestern.svg);
+	background-position: 0.5em 0;
+	background-size: auto 200%;
 	background-repeat: no-repeat;
-	background-position: 1em 50%;
 	background-color: #4D2A79;
 }
 
@@ -94,7 +99,7 @@ var {
 code {
 	display: block;
 	text-align: center;
-	margin: 0 0 -0.5em;
+	margin: -0.5em 0;
 	font-size: 0.9em;
 }
 
@@ -113,7 +118,7 @@ figcaption::before {
 figcaption {
 	font-size: 0.8em;
 	color: #333;
-	margin: 2em 0 0;
+	margin: 1.5em 0 0;
 	line-height: 1.25em;
 }
 
