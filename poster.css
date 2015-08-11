@@ -9,8 +9,8 @@
 }
 
 html {
-	font-size: 24pt;
-	font-family: helvetica, arial, sans-serif;
+	font-size: 0.33333in;
+	font-family: georgia, helvetica, arial, sans-serif;
 	background-color: #fff;
 	box-sizing: border-box;
 }
@@ -20,6 +20,7 @@ html {
 }
 
 body {
+	position: relative;
 	margin: 1em auto;
 	padding: 0 0 5em;
 	box-shadow: 0 0 4em #666;
@@ -108,6 +109,7 @@ figure {
     margin: 0.75em auto;
     background-color: white;
     padding: 0.5em;
+	line-height: 1em;
 	/*border: 1px solid #eee;*/
 }
 figcaption::before {
@@ -122,12 +124,19 @@ figcaption {
 	line-height: 1.25em;
 }
 
-figure.row {
-	width: 100%;
-	line-height: 1em;
-}
-figure.row img {
+figure img {
 	width: 300px;
+}
+
+figure.float {
+	float: right;
+	margin: 0 0.5em 0.5em 1em;
+}
+figure.float figcaption {
+	margin-top: 0.5em;
+}
+figure.float img {
+	width: 100%;
 }
 /*
 figure img, figure video {

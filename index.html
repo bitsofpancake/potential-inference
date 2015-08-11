@@ -136,17 +136,31 @@
 				<p>We generated mock data from this potential and tested the inference algorithm on the resulting "observations." The results for <var>n = 10^5</var> particles and true parameters of <var>q^2=0.8</var> and <var>R_c^2=1.5</var> are shown in the following figure.</p>
 				
 				<figure>
-					<img />
-					<figcaption>The logarithm of the posterior distribution of the parameters.</figcaption>
+					<img src="images/logarithmic.svg" />
+					<figcaption>A contour plot of the likelihood of the parameters. Red is higher; contours are at <var>2^{-2^i}</var> for <var>i=0,\ldots,13</var>.</figcaption>
 				</figure>
 				
 				<p>As you can see, the posterior distribution correctly peaks near the true values of the parameters, and thus, the algorithm is successful!</p>
 			</article>
 			
 			<article>
-				<h2>Challenges and future work</h2>
+				<h2>Advantages and future work</h2>
 				
-				<p>Computation time</p>
+				<p>Our method has two novel advantages:
+					<ul>
+						<li><b>General:</b> This algorithm requires only that the particles are in steady-state, whereas older methods require improbable assumptions, e.g. that the potential is <em>Liouville-integrable</em>.</li>
+						<li><b>Intuitive:</b> It has an intuitive interpretation in terms of phase-mixing.</li>
+					</ul>
+				</p>
+				
+				<p>
+					Nevertheless, there are several challenges that should be addressed before applying the algorithm to the Gaia data:
+					<ul>
+						<li><b>Computation time:</b> An application to <var>10^9</var> particles, although feasible, currently requires a large supercomputer cluster.</li>
+						<li><b>Noise:</b> The likelihood function is currently quite noisy, which may prevent accurate inference of parameters.</li>
+						<li><b>Lack of error bounds:</b> It is currently unclear how to accurately bound the error of the estimated paramters.</li>
+					</ul>
+				</p>
 			</article>
 		</main>
 		
