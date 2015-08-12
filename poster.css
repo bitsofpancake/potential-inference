@@ -30,14 +30,11 @@ body {
 	height: 40in;
 	counter-reset: figure;
 	
-/*	background-color: #ddd;*/
-
 	background-color: #030306;
-	background-image: url(images/milky_way.jpg);
-	background-size: 100%;
-	background-position: right 24in;
+	background-image: url(images/stellar_density_map.png);
+	background-size: 280%;
+	background-position: -47in 12in;
 	background-repeat: no-repeat;
-	
 }
 
 h1, h2, h3, h4, h5, h6, header {
@@ -46,7 +43,7 @@ h1, h2, h3, h4, h5, h6, header {
 }
 
 header {
-	height: 4in;
+	height: 3.8in;
 	color: white;
 	text-align: center;
 	
@@ -80,9 +77,10 @@ main {
 	display: flex;
 	flex-flow: column wrap;
 	align-content: center;
-	padding: 0.375in;
+	justify-content: space-between;
+	padding: 1in 0 0.5in;
 	position: absolute;
-	top: 4in;
+	top: 3.8in;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -92,10 +90,13 @@ article {
 	background-color: #fff;
 	width: 11in;
 	padding: 1.25em 1.5em 0.5em;
-	margin: 0.375in;
+	margin: 0 0.25in;
 	line-height: 1.5em;
 }
 
+tt {
+	font-size: 0.8em;
+}
 p {
 	margin: 1em 0;
 }
@@ -120,7 +121,7 @@ figure {
     padding: 0.5em;
 	line-height: 1em;
 }
-figcaption::before {
+figure figcaption::before {
 	counter-increment: figure;
 	content: "Figure " counter(figure) ": ";
 	font-weight: bold;
@@ -147,21 +148,25 @@ figure.float img {
 	width: 100%;
 }
 
-.cite {
-	color: #90B5C2;
-	color: black;
-}
 sup {
 	vertical-align: baseline;
 	position: relative;
 	top: -0.5em;
 	font-size: 0.75em;
 }
-ol.citations {
-	margin: 1.5em 0 1em;
+.citations {
 	font-size: 0.75em;
-	line-height: 1.15;
+	list-style: none;
+	line-height: 1.25;
+	padding: 0;
+	margin: 0 0 1em;
 }
-ol.citations li {
+.citations li {
 	margin: 0;
+	padding: 0;
+}
+.acknowledgement {
+	font-size: 0.75em;
+	line-height: 1.25;
+	margin-top: 0
 }

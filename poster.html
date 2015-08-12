@@ -1,32 +1,31 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Inferring the Mass Distribution of the Milky Way - Casey Chu</title>
+		<title>Inferring the Gravitational Potential of the Milky Way - Casey Chu</title>
 		<link href="poster.css" type="text/css" rel="stylesheet" />
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.css" type="text/css" rel="stylesheet" />
 	</head>
 	<body>
+		<div id="background"></div>
+	
 		<header>
-			<h1>Inferring the Mass Distribution of the Milky Way</h1>
+			<h1>Inferring the Gravitational Potential of the Milky Way</h1>
 			<div class="author">Casey Chu<sup>1,2</sup>, Yoram Lithwick<sup>1</sup>, Fabio Antonini<sup>1</sup></div>
 			<div class="insitutions"><sup>1</sup>Northwestern University, <sup>2</sup>Harvey Mudd College</div>
 		</header>
 		
-		<main>			
-			<article>
+		<main>
+			<article style="margin-bottom: 0.5in">
 				<h2>How do we study something we can't see?</h2>
-
-				<p>One way to study dark matter is to observe its gravitational effect on visible objects: stars. And we're in luck, because the spacecraft <i>Gaia</i> is currently recording the position and velocity of one billion stars in the Milky Way.<sup>1</sup> These movements contain a large amount of statistical information about the gravitational potential they are traveling in. If we knew this gravitational potential, then we could find the distribution of matter in the Milky Way, using Poisson's equation.<sup>2</sup></p>
 				
-				<p>We've created a simple, numerical algorithm to extract the gravitational potential from the data. Given a set of observed positions and velocities of particles (stars), we are able to infer the potential in which they are traveling.</p>
-				<!--
-				<ol class="citations">
-					<li>Perryman et al. 2001. Journal whose Name I'll Look Up.</span></li>
-					<li>Binney &amp; Tremaine 2008. Journal whose Name I'll Look Up.</span></li>
-				</ol-->
+				<p>One way to study dark matter is to observe its effect on visible objects: stars. In particular, the distribution of dark matter in our galaxy generates a gravitational potential that affects the motion of the stars we observe.</p>
+				
+				<p>The spacecraft <i>Gaia</i> is currently recording the position and velocity of one billion stars in the Milky Way (Perryman et al. 2001), so we are in perfect position to take advantage of this information about the gravitational potential that is statistically encoded in the motion of the stars.</p>
+				
+				<p>We've created a simple, numerical algorithm to extract the gravitational potential from <i>Gaia</i>-like data. Given a set of observed positions and velocities of particles (stars), we are able to infer the potential in which they are traveling.</p>
 			</article>
-		
-			<article>
+			
+			<article style="margin-bottom: 0.25em">
 				<h2>The fundamental assumption: phase-mixing</h2>
 				
 				<p>The algorithm we developed relies on the system being <em>phase-mixed</em>. Figure 1 depicts the phase-mixing of 200 particles that are initially close together in phase space, evolving in a potential of <var>\Phi(x) = \frac{1}{2}|x|^\alpha</var> for <var>\alpha = 1.5</var>.</p>
@@ -46,7 +45,7 @@
 				
 				<p>Notice that as time progresses, the particles approach a configuration that is macroscopically steady-state, or phase-mixed.</p>
 
-				<p>One important property of phase-mixing is that the <em>same</em> set of particles evolve to <em>different</em> steady-state "shapes" when they are evolved under different potentials (e.g., different values of <var>\alpha</var>).</p>
+				<p>One important property of phase-mixing is that if we evolve the <em>same</em> set of particles under <em>different</em> potentials (e.g., different values of <var>\alpha</var>), then the particles evolve to <em>different</em> steady-state configurations.</p>
 				<!--
 				<p>Figure 2 depicts an important property of phase-mixing: the <em>same</em> set of particles evolve to <em>different</em> steady-state "shapes" when they are evolved under different potentials (e.g., different values of <var>\alpha</var>).</p>
 				
@@ -61,6 +60,10 @@
 -->
 			</article>
 			
+			<article style="background: none; margin: 0 0.5em; color: rgba(255, 255, 255, 0.9); font-size: 0.8em; flex: 1">
+				<b>Below:</b> A star map generated from preliminary Gaia<br /> data. Source: ESA/Gaia (CC BY-SA 3.0 IGO).
+			</article>
+			
 			<article>
 				<h2>The insight behind the inference algorithm</h2>
 				
@@ -70,16 +73,16 @@
 				</figure-->
 				
 				<!--p>Suppose that we are given the positions and velocities of particles taken from an unknown potential. Our aim is to guess which potential these particles come from.</p-->
-				<p>Let's assume that we know that the particles we observe are in a steady-state configuration.</p>
+				<p>Let's assume that we know that the particles we observe are in a steady-state configuration. Then:</p>
 				
 			<ul>
 				<li>If we evolve the particles under the <em>correct</em> potential, they will remain in the <em>same, steady-state configuration</em>.</li>
 				<li>Conversely, if we evolve them under an <em>incorrect</em> potential, they will evolve towards a <em>different configuration</em>.</li>
 			</ul>
 			
-				<p>Using this insight, one algorithm to infer the correct potential from a set of observations is to simply to guess a bunch of different potentials, evolve the observed particles under each of these trial potentials, and see which potential best preserves the original configuration.</p>
+				<!--p>Using this insight, one algorithm to infer the correct potential from a set of observations of particles is to simply to guess a bunch of different potentials, evolve the observed particles under each of these trial potentials, and see which potential best preserves the original configuration.</p-->
 				
-				<p>We demonstrate this in Figure 3, where a set of particles, drawn from an unknown potential, is evolved under different trial potentials.</p>
+				<p>We demonstrate this in Figure 2, where a set of particles, drawn from an unknown potential, is evolved under three different trial potentials (different values of <var>\alpha</var>).</p>
 				
 				<figure>
 					<!--
@@ -87,15 +90,18 @@
 						<source src="images/evolution.webm" type="video/webm" />
 					</video>-->
 					<img src="images/comparison0_1.5.svg" />
+					<img src="images/comparison10_1.5.svg" />
+					<img src="images/comparison100_1.5.svg" />
 					<img src="images/comparison0_1.8.svg" />
+					<img src="images/comparison10_1.8.svg" />
+					<img src="images/comparison100_1.8.svg" />
 					<img src="images/comparison0_2.5.svg" />
-					<img src="images/comparison1_1.5.svg" />
-					<img src="images/comparison1_1.8.svg" />
-					<img src="images/comparison1_2.5.svg" />
+					<img src="images/comparison10_2.5.svg" />
+					<img src="images/comparison100_2.5.svg" />
 					<figcaption>The evolution of observed particles under different potentials.</figcaption>
 				</figure>
 				
-				<p>In this simple example, the particles most likely come from an <var>\alpha = 1.5</var> potential, because the configuration of the particles evolved under that potential most resembles the original, observed distribution.</p>
+				<p>In this simple example, since the configuration of the particles evolved under the <var>\alpha = 1.5</var> potential most resembles the original, observed distribution, we may infer that the particles most likely come from an <var>\alpha = 1.5</var> potential.</p>
 			</article>
 			
 			<!--article>
@@ -131,31 +137,37 @@
 			</article-->
 			<article>
 				<h2>The likelihood function</h2>
-				<p>Instead of choosing the best potential by eye, we can construct a function to quantify how good a trial potential is. Let <var>x_1</var>, <var>v_1</var>, <var>\ldots</var>, <var>x_n</var>, <var>v_n</var> be a set of <var>n</var> observed positions and velocities. Then the <em>likelihood</em> that these observations came from a particular potential <var>\Phi</var> is
+				<p>Instead of choosing the best potential by eye, we can construct a function <var>L</var> that quantifies how well a trial potential preserves the original configuration.</p>
+				
+				<p>Let <var>x_1</var>, <var>v_1</var>, <var>\ldots</var>, <var>x_n</var>, <var>v_n</var> be a set of <var>n</var> observed positions and velocities. Then the <em>likelihood</em> that these observations came from a particular potential <var>\Phi</var> is
 					<code>
 						L(\Phi \,|\, x_1,v_1,\ldots,x_n,v_n) = \prod_i f(x_i, v_i \,|\, \Phi),
 					</code>
 					where we've defined
 					<code>
-						f(x,v \,|\, \Phi) = \frac{1}{T}\int_0^T\sum_i K(x_i(t) - x)\,K(v_i(t) - v) \,dt,
+						f(x,v \,|\, \Phi) = \frac{1}{nT}\int_0^T\sum_i K(x_i(t) - x)\,K(v_i(t) - v) \,dt,
 					</code>
 					where <var>x_i(t)</var> and <var>v_i(t)</var> denote the position and velocity of the <var>i</var>th particle evolved to time <var>t</var> under the potential <var>\Phi</var>, and <var>K(\cdot)</var> is a <em>kernel function</em>, e.g., a Gaussian centered at <var>0</var>. This function <var>L</var> is greatest for potentials that preserve the original configuration.
 				</p>
 			</article>
 			
-			<article>
+			<article style="background-color: rgba(255, 255, 255, 0.3); margin-top: 0">
+				<p class="acknowledgement">This material is based upon work supported by the National Science Foundation under Grant No. AST-1359462, a Research Experiences for Undergraduates (REU) grant awarded to CIERA at Northwestern University. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the National Science Foundation.</p>
+			</article>
+			
+			<article style="padding-bottom: 1em">
 				<h2>Summary of the algorithm</h2>
 				
 				<p>Our algorithm to infer the potential from a set of observed positions and velocities is as follows.</p>
 				
 				<ol>
-					<li><em>Guess a trial potential</em> by choosing a set of values for the parameters of a potential. We choose parameters using the Metropolis-Hastings algorithm.</li>
+					<li><em>Guess a trial potential</em> by choosing a set of values for the parameters of a potential, e.g., via a Monte Carlo method.</li>
 					<li><em>Calculate the likelihood</em> of observing the data under the chosen potential, according to the formula in the previous section.</li>
 					<li><em>Repeat</em> steps 1&ndash;2 until convergence of the likelihood. The most likely potential has the parameters with the greatest likelihood.</li>
 				</ol>
 			</article>
 			
-			<article>
+			<article style="padding-bottom: 1em">
 				<h2>A two-dimensional test case</h2>
 				
 				<figure class="float" style="width: 400px; margin-top: 0.75em; margin-right: -0.3em; margin-left: 0.5em">
@@ -175,10 +187,10 @@
 					<figcaption>"Stars" in a logarithmic potential.</figcaption>
 				</figure-->
 				
-				<p>We simulated <var>n = 10^4</var> particles in the logarithmic potential with true parameters of <var>q^2=0.8</var> and <var>R_c^2=1.5</var>. Figure 4 depicts the likelihood we calculated. It peaks near the true values of the parameters, indicating the algorithm was successful.</p>
+				<p>We simulated <var>n = 10^4</var> particles in the logarithmic potential with true parameters of <var>q^2=0.8</var> and <var>R_c^2=1.5</var>. Figure 3 depicts the likelihood we calculated. It peaks near the true values of the parameters, indicating that the algorithm was successful.</p>
 			</article>
 			
-			<article>
+			<article style="padding-bottom: 1em">
 				<h2>Advantages and future work</h2>
 				
 				<p>Our method has two novel advantages over existing methods <span class="cite">(e.g., Bovy et al. 2010, Magorrian 2014, Han et al. 2015)</span>:
@@ -189,7 +201,7 @@
 				</p>
 				
 				<p>
-					Nevertheless, there are several challenges that should be addressed before applying the algorithm to the <i>Gaia</i> data:
+					Nevertheless, there are several challenges that should be addressed before applying the algorithm to <i>Gaia</i> data:
 					<ul>
 						<li><b>Computation time:</b> An application to <var>10^9</var> particles will be computationally expensive.</li>
 						<li><b>Noise:</b> The likelihood function is currently quite noisy, which may prevent accurate inference of parameters.</li>
@@ -199,28 +211,22 @@
 			</article>
 			
 			<article>
-				<p style="font-size: 0.8em; line-height: 1.25">This material is based upon work supported by the National Science Foundation under Grant No. AST-1359462, a Research Experiences for Undergraduates (REU) grant awarded to CIERA at Northwestern University. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the National Science Foundation.</p>
+				<h2>Contact information and further reading</h2>
+				
+				<p><img src="images/casey.jpg" style="float: right; width: 185px; margin: 0.15em 0.5em 0 1em" />For questions or comments, please contact Casey Chu at <tt>cchu@hmc.edu</tt>. Code written in C++ and a derivation of the likelihood function is available at <tt>bitsofpancake.github.io/potential-inference</tt>.</p>
 			</article>
 			
-			<!--article>
-				<h2>References</h2>
-				
-				<ol>
-					<li>Gaia</li>
-					<li>Binney and Tremaine</li>
-					<li>Han</li>
-					<li>Magorrian</li>
-					<li>Bovy</li>
-				</ol>
-			</article-->
+			<article style="background-color: rgba(255, 255, 255, 0.3)">
+				<ul class="citations">
+					<li>Binney &amp; Tremaine, 2008, <cite>Galactic Dynamics: Second Edition</cite>.</li>
+					<li>Bovy et al., 2010, ApJ, 711, 1157.</li>
+					<li>Han et al., 2015, arXiv:1507.00769 (pre-print).</li>
+					<li>Magorrian, 2014, MNRAS, 437, 2230.</li>
+					<li>Perryman et al., 2001, A&amp;A, 369, 339.</li>
+				</ul>
+			</article>
 		</main>
-		
-		<!--figcaption style="position: absolute; right: 6em; bottom: 20em; color: rgba(255, 255, 255, 0.9); width: 600px; text-align: center">
-			A star map generated from preliminary Gaia data. Source: ESA/Gaia &ndash; CC BY-SA 3.0 IGO.
-		</figcaption-->
-		
-		<footer style="font-size: 0.5em; text-align: center; color: rgba(255, 255, 255, 0.75); position: absolute; bottom: 0; width: 100%; margin: 2em 0;">
-			
+
 		</footer>
 		
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.js"></script>
