@@ -1,6 +1,6 @@
 @media print {
 	@page {
-		size: 36in 40in;
+		size: 35in 40in;
 	}
 	body {
 		box-shadow: none !important;
@@ -26,15 +26,25 @@ body {
 	margin: 3em auto;
 	box-shadow: 0 0 4em #666;
 	
-	width: 36in;
+	width: 35in;
 	height: 40in;
 	counter-reset: figure;
 	
 	background-color: #030306;
+}
+#background {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	
 	background-image: url(images/stellar_density_map.png);
 	background-size: 280%;
-	background-position: -47in 12in;
+	background-position: -46in 12in;
 	background-repeat: no-repeat;
+	-webkit-filter: blur(0.04in);
+	overflow: hidden;
 }
 
 h1, h2, h3, h4, h5, h6, header {
@@ -43,7 +53,7 @@ h1, h2, h3, h4, h5, h6, header {
 }
 
 header {
-	height: 3.8in;
+	height: 4in;
 	color: white;
 	text-align: center;
 	
@@ -78,9 +88,9 @@ main {
 	flex-flow: column wrap;
 	align-content: center;
 	justify-content: space-between;
-	padding: 1in 0 0.5in;
+	padding: 0.5in 0 0.5in;
 	position: absolute;
-	top: 3.8in;
+	top: 4in;
 	bottom: 0;
 	left: 0;
 	right: 0;
