@@ -8,18 +8,22 @@
 	<body>
 		<header>
 			<h1>Inferring the Mass Distribution of the Milky Way</h1>
-			<div>Casey Chu, Yoram Lithwick, Fabio Antonini</div>
+			<div class="author">Casey Chu<sup>1,2</sup>, Yoram Lithwick<sup>1</sup>, Fabio Antonini<sup>1</sup></div>
+			<div class="insitutions"><sup>1</sup>Northwestern University, <sup>2</sup>Harvey Mudd College</div>
 		</header>
 		
 		<main>			
 			<article>
 				<h2>How do we study something we can't see?</h2>
-				
-				<!--p>Astrophysicists generally accept that there is a massive but invisible halo of dark matter around most galaxies. <However, the nature of this dark matter is largely unknown. One natural place to start investigating these dark matter halos is our own Milky Way.> But how do we study something we can't see?</p-->
 
-				<p>One way to study dark matter is to observe its gravitational effect on visible objects: stars. And we're in luck, because the spacecraft <i>Gaia</i>[1 http://arxiv.org/abs/astro-ph/0101235] is currently recording the position and velocity of one billion stars in the Milky Way. These movements contain a large amount of statistical information about the gravitational potential they are traveling in. If we knew this gravitational potential, then we could find the distribution of matter in the Milky Way, using Poisson's equation. [2]</p>
+				<p>One way to study dark matter is to observe its gravitational effect on visible objects: stars. And we're in luck, because the spacecraft <i>Gaia</i> is currently recording the position and velocity of one billion stars in the Milky Way.<sup>1</sup> These movements contain a large amount of statistical information about the gravitational potential they are traveling in. If we knew this gravitational potential, then we could find the distribution of matter in the Milky Way, using Poisson's equation.<sup>2</sup></p>
 				
 				<p>We've created a simple, numerical algorithm to extract the gravitational potential from the data. Given a set of observed positions and velocities of particles (stars), we are able to infer the potential in which they are traveling.</p>
+				<!--
+				<ol class="citations">
+					<li>Perryman et al. 2001. Journal whose Name I'll Look Up.</span></li>
+					<li>Binney &amp; Tremaine 2008. Journal whose Name I'll Look Up.</span></li>
+				</ol-->
 			</article>
 		
 			<article>
@@ -41,7 +45,9 @@
 				</figure>
 				
 				<p>Notice that as time progresses, the particles approach a configuration that is macroscopically steady-state, or phase-mixed.</p>
-				
+
+				<p>One important property of phase-mixing is that the <em>same</em> set of particles evolve to <em>different</em> steady-state "shapes" when they are evolved under different potentials (e.g., different values of <var>\alpha</var>).</p>
+				<!--
 				<p>Figure 2 depicts an important property of phase-mixing: the <em>same</em> set of particles evolve to <em>different</em> steady-state "shapes" when they are evolved under different potentials (e.g., different values of <var>\alpha</var>).</p>
 				
 				<figure>
@@ -52,7 +58,7 @@
 				</figure>
 				
 				<p>This property, that different potentials produce different steady-state configurations, is crucial to our method.</p>
-
+-->
 			</article>
 			
 			<article>
@@ -64,10 +70,16 @@
 				</figure-->
 				
 				<!--p>Suppose that we are given the positions and velocities of particles taken from an unknown potential. Our aim is to guess which potential these particles come from.</p-->
-
-				<p>Our algorithm relies on the following insight. Let's assume we know that the particles we observe are in a steady-state configuration. Then if we evolve them under the correct potential, they will remain in the same, steady-state configuration. Conversely, if we evolve them under an incorrect potential, they will evolve towards a different configuration!</p>
+				<p>Let's assume that we know that the particles we observe are in a steady-state configuration.</p>
 				
-				<p>Then [then?] one algorithm to find the correct potential is to simply to guess a bunch of different potentials, evolve the observed particles under each of these trial potentials, and see which potential best preserves the original configuration. Figure 4 [figure 4] illustrates the evolution of the particles in Figure 3 under different potentials.</p>
+			<ul>
+				<li>If we evolve the particles under the <em>correct</em> potential, they will remain in the <em>same, steady-state configuration</em>.</li>
+				<li>Conversely, if we evolve them under an <em>incorrect</em> potential, they will evolve towards a <em>different configuration</em>.</li>
+			</ul>
+			
+				<p>Using this insight, one algorithm to infer the correct potential from a set of observations is to simply to guess a bunch of different potentials, evolve the observed particles under each of these trial potentials, and see which potential best preserves the original configuration.</p>
+				
+				<p>We demonstrate this in Figure 3, where a set of particles, drawn from an unknown potential, is evolved under different trial potentials.</p>
 				
 				<figure>
 					<!--
@@ -80,7 +92,7 @@
 					<img src="images/comparison1_1.5.svg" />
 					<img src="images/comparison1_1.8.svg" />
 					<img src="images/comparison1_2.5.svg" />
-					<figcaption>The evolution of the observed particles under different potentials. [why t=1?]</figcaption>
+					<figcaption>The evolution of observed particles under different potentials.</figcaption>
 				</figure>
 				
 				<p>In this simple example, the particles most likely come from an <var>\alpha = 1.5</var> potential, because the configuration of the particles evolved under that potential most resembles the original, observed distribution.</p>
@@ -127,7 +139,7 @@
 					<code>
 						f(x,v \,|\, \Phi) = \frac{1}{T}\int_0^T\sum_i K(x_i(t) - x)\,K(v_i(t) - v) \,dt,
 					</code>
-					where <var>x_i(t)</var> and <var>v_i(t)</var> denote the position and velocity of the <var>i</var>th particle evolved to time <var>t</var> under the potential <var>\Phi</var>, and <var>K(\cdot)</var> is a <em>kernel function</em>, e.g. a Gaussian centered at <var>0</var>. This function is greatest for potentials that preserve the original configuration.
+					where <var>x_i(t)</var> and <var>v_i(t)</var> denote the position and velocity of the <var>i</var>th particle evolved to time <var>t</var> under the potential <var>\Phi</var>, and <var>K(\cdot)</var> is a <em>kernel function</em>, e.g., a Gaussian centered at <var>0</var>. This function <var>L</var> is greatest for potentials that preserve the original configuration.
 				</p>
 			</article>
 			
@@ -137,24 +149,25 @@
 				<p>Our algorithm to infer the potential from a set of observed positions and velocities is as follows.</p>
 				
 				<ol>
-					<li><em>Guess a trial potential</em> by choosing a set of values for the parameters of a potential. [reword?] We choose parameters using the Metropolis-Hastings algorithm.</li>
+					<li><em>Guess a trial potential</em> by choosing a set of values for the parameters of a potential. We choose parameters using the Metropolis-Hastings algorithm.</li>
 					<li><em>Calculate the likelihood</em> of observing the data under the chosen potential, according to the formula in the previous section.</li>
-					<li><em>Repeat</em> steps 1&ndash;2 until convergence of the likelihood. We can report either the single set of parameters with the maximum likelihood, or a range of parameter values with high likelihoods. [reword]</li>
+					<li><em>Repeat</em> steps 1&ndash;2 until convergence of the likelihood. The most likely potential has the parameters with the greatest likelihood.</li>
 				</ol>
 			</article>
 			
 			<article>
 				<h2>A two-dimensional test case</h2>
 				
-				<p>We have tested the algorithm for the two-dimensional <em>logarithmic potential</em> given by
-					<code>\Phi(x,y) = \log(x^2 + \frac{y^2}{q^2} + R_c^2),</code>
-					where <var>q</var> and <var>R_c</var> are parameters that describe the shape of the potential. It is a simple model for real galaxies.</p>
-				
-				
-				<figure class="float" style="width: 450px">
+				<figure class="float" style="width: 400px; margin-top: 0.75em; margin-right: -0.3em; margin-left: 0.5em">
 					<img src="images/logarithmic.svg" />
 					<figcaption>A contour plot of the likelihood of the parameters. Red is higher; contours are at <var>2^{-2^i}</var> for <var>i=0,\ldots,13</var>.</figcaption>
 				</figure>
+				
+				<p>We have tested the algorithm for the two-dimensional <em>logarithmic potential</em> given by
+					<code>\Phi(x,y) = \log(x^2 + \frac{y^2}{q^2} + R_c^2),</code>					
+					where <var>q</var> and <var>R_c</var> are parameters that describe the shape of the potential. It is a simple model for real galaxies.</p>
+				
+				
 				<!--figure style="width: 400px">
 					<video controls loop style="width: 100%">
 						<source src="images/logarithmic_potential.webm" type="video/webm" />
@@ -162,31 +175,44 @@
 					<figcaption>"Stars" in a logarithmic potential.</figcaption>
 				</figure-->
 				
-				<p>We simulated mock data from this potential and tested the inference algorithm on the resulting "observations." The results for <var>n = 10^4</var> particles and true parameters of <var>q^2=0.8</var> and <var>R_c^2=1.5</var> are shown in Figure 4.</p>
-				
-				<p>The likelihood correctly peaks near the true values of the parameters, meaning that the algorithm is successful!</p>
+				<p>We simulated <var>n = 10^4</var> particles in the logarithmic potential with true parameters of <var>q^2=0.8</var> and <var>R_c^2=1.5</var>. Figure 4 depicts the likelihood we calculated. It peaks near the true values of the parameters, indicating the algorithm was successful.</p>
 			</article>
 			
 			<article>
 				<h2>Advantages and future work</h2>
 				
-				<p>Our method has two novel advantages:
+				<p>Our method has two novel advantages over existing methods <span class="cite">(e.g., Bovy et al. 2010, Magorrian 2014, Han et al. 2015)</span>:
 					<ul>
-						<li><b>General:</b> This algorithm requires only that the particles are in steady-state, whereas other methods also require that the potential be integrable [add a link? mention that this is improbabl?].</li>
+						<li><b>General:</b> This algorithm requires only that the particles are in steady-state, whereas some other methods require also that the potential be integrable.</li>
 						<li><b>Intuitive:</b> It has an intuitive interpretation in terms of phase-mixing.</li>
 					</ul>
 				</p>
 				
 				<p>
-					Nevertheless, there are several challenges that should be addressed before applying the algorithm to the Gaia data:
+					Nevertheless, there are several challenges that should be addressed before applying the algorithm to the <i>Gaia</i> data:
 					<ul>
-						<li><b>Computation time:</b> An application to <var>10^9</var> particles may be too computationally expensive.</li>
+						<li><b>Computation time:</b> An application to <var>10^9</var> particles will be computationally expensive.</li>
 						<li><b>Noise:</b> The likelihood function is currently quite noisy, which may prevent accurate inference of parameters.</li>
-						<li><b>Lack of error bounds:</b> It is currently unclear how to accurately bound the error of the estimated paramters. [determine the error bars, uncertainty]</li>
+						<li><b>Lack of error bounds:</b> It's currently unclear how to accurately quantify the uncertainty in the inferred parameters.</li>
 					</ul>
-					Wa believe that these are minor that we can overcome [re].
 				</p>
 			</article>
+			
+			<article>
+				<p style="font-size: 0.8em; line-height: 1.25">This material is based upon work supported by the National Science Foundation under Grant No. AST-1359462, a Research Experiences for Undergraduates (REU) grant awarded to CIERA at Northwestern University. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the National Science Foundation.</p>
+			</article>
+			
+			<!--article>
+				<h2>References</h2>
+				
+				<ol>
+					<li>Gaia</li>
+					<li>Binney and Tremaine</li>
+					<li>Han</li>
+					<li>Magorrian</li>
+					<li>Bovy</li>
+				</ol>
+			</article-->
 		</main>
 		
 		<!--figcaption style="position: absolute; right: 6em; bottom: 20em; color: rgba(255, 255, 255, 0.9); width: 600px; text-align: center">
@@ -194,7 +220,7 @@
 		</figcaption-->
 		
 		<footer style="font-size: 0.5em; text-align: center; color: rgba(255, 255, 255, 0.75); position: absolute; bottom: 0; width: 100%; margin: 2em 0;">
-			This material is based upon work supported by the National Science Foundation under Grant No. AST-1359462, a Research Experiences for Undergraduates (REU) grant awarded to CIERA at Northwestern University. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the National Science Foundation.
+			
 		</footer>
 		
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.js"></script>
