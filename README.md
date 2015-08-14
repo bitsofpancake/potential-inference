@@ -1,2 +1,2 @@
-# potentially-awesome
+# potential-inference
 Infers the gravitational potential/mass distribution of a galaxy from observations of stars' positions and velocities.
