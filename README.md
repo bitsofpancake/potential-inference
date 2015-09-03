@@ -1,7 +1,7 @@
 # potential-inference
 Infers the gravitational potential/mass distribution of a galaxy from observations of stars' positions and velocities.
 
-Needs boost and [nanoflann](https://github.com/jlblancoc/nanoflann/blob/master/include/nanoflann.hpp).
+Needs boost, [Eigen](http://eigen.tuxfamily.org), and [nanoflann](https://github.com/jlblancoc/nanoflann/blob/master/include/nanoflann.hpp).
 
 To generate 300 stars with parameters 1.5 and 0.8, use
 
